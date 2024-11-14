@@ -143,5 +143,4 @@ public class UserEntity {
         ProfileImg = profileImg;
     }
 }
-Footer
 
