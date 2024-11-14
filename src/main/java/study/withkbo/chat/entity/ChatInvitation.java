@@ -19,11 +19,10 @@ public class ChatInvitation {
     @JoinColumn(name = "room_id", nullable = false)
     private ChatRoom room;
 
-    // Users에서 idx정보 가져오기
     @ManyToOne
     @JoinColumn(name = "inviter_user_id", nullable = false)
     private UserEntity inviter;
-    // Users에서 idx정보 가져오기
+
     @ManyToOne
     @JoinColumn(name = "invitee_user_id", nullable = false)
     private UserEntity invitee;

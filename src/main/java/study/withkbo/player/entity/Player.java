@@ -41,4 +41,5 @@ public class Player {
     private int homeRun;
     private int rbi;
     private int steal;
+
 }

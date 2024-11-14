@@ -14,7 +14,7 @@ import java.util.List;
 public class UserEntity {
 
     @Id // 프라이머리 키 지정
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(nullable = false, length = 30)

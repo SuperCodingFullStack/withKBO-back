@@ -15,7 +15,6 @@ public class ChatParticipants {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 다대다 중간 매핑
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
     private ChatRoom room;

@@ -25,4 +25,5 @@ public class ChatMessage {
     @Lob // 대용량 데이터 가능해짐
     @Column(nullable = false)
     private String message;
+
 }
