@@ -24,6 +24,6 @@ public class ChatRoom {
 
     // cascade는 전파 수행이고 Chatroom의 변경사항이 ChatParticipants에 자동으로 변경
     // orphanRemoval는 Chatroom과의 관계가 끊어진 ChatParticipants가 자동으로 삭제
-    @OneToMany(mappedBy = "chat_room", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatParticipants> participants;
 }
