@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
+@Table(name = "t_party")
 public class Party {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

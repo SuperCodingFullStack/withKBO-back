@@ -87,7 +87,7 @@ public class TeamService {
 
     public List<TeamInfoResponse> teamToDto(List<Team> existTeams) {
         return existTeams.stream().map(team -> TeamInfoResponse.builder()
-                        .teamId(team.getTeamId())
+                        .teamId(team.getId())
                         .ranking(team.getRanking())
                         .teamName(team.getTeamName())
                         .gamesPlayed(team.getGamesPlayed())
@@ -98,7 +98,7 @@ public class TeamService {
                         .consecutive(team.getConsecutive())
                         .last10Games(team.getLast10Games())
                         .build())
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }

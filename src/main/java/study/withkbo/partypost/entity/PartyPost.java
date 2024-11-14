@@ -1,4 +1,4 @@
-package study.withkbo.PartyPost.entity;
+package study.withkbo.partypost.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "t_party_post")
 public class PartyPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

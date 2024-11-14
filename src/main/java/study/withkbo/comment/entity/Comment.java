@@ -1,4 +1,4 @@
-package study.withkbo.Comment.entity;
+package study.withkbo.comment.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "t_comment")
 public class Comment {
 
     @Id

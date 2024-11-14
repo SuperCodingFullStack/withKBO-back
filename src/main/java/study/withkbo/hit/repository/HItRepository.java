@@ -1,6 +1,6 @@
-package study.withkbo.Hit.repository;
+package study.withkbo.hit.repository;
 
-import study.withkbo.Comment.entity.Comment;
+import study.withkbo.comment.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

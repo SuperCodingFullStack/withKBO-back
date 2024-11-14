@@ -1,8 +1,8 @@
-package study.withkbo.Comment.repository;
+package study.withkbo.comment.repository;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import study.withkbo.Comment.entity.Comment;
+import study.withkbo.comment.entity.Comment;
 
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {

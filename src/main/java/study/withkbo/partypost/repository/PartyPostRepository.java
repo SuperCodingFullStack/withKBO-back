@@ -1,13 +1,12 @@
-package study.withkbo.PartyPost.repository;
+package study.withkbo.partypost.repository;
 
-import study.withkbo.Comment.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
-import study.withkbo.PartyPost.entity.PartyPost;
+import study.withkbo.partypost.entity.PartyPost;
 
 import java.util.List;
 
 
-public interface PartyPostRepository extends JpaRepository<Comment, Long> {
+public interface PartyPostRepository extends JpaRepository<PartyPost, Long> {
 
     // 모든 게시글을 조회하는 것
     // 페이지로 나누어서 조회하는 것
