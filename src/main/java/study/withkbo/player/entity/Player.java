@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 public class Player {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long teamId;
+    private Long playerId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
@@ -41,4 +41,5 @@ public class Player {
     private int homeRun;
     private int rbi;
     private int steal;
+
 }
