@@ -1,23 +1,22 @@
-package study.withkbo.UserLoginLogout.Entity;
+package study.withkbo.user.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import study.withkbo.chat.entity.ChatParticipants;
 
 import java.sql.Date;
-import java.util.List;
 
+@Table(name = "t_user")
 @Entity
 @Getter
 @NoArgsConstructor
-public class UserEntity {
+public class User {
 
     @Id // 프라이머리 키 지정
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 100)
     private String uEmail;
 
     @Column(nullable = false, length = 30)
@@ -50,8 +49,6 @@ public class UserEntity {
     @Column(nullable = false, length = 150)
     private String ProfileImg;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ChatParticipants> participants;
 
 }
 

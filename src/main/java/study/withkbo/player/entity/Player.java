@@ -15,10 +15,11 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "t_player")
 public class Player {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long playerId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
@@ -41,5 +42,4 @@ public class Player {
     private int homeRun;
     private int rbi;
     private int steal;
-
 }

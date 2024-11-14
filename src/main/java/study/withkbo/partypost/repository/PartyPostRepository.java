@@ -1,8 +1,7 @@
-package study.withkbo.PartyPost.repository;
+package study.withkbo.partypost.repository;
 
-import study.withkbo.Comment.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
-import study.withkbo.PartyPost.entity.PartyPost;
+import study.withkbo.partypost.entity.PartyPost;
 
 import java.util.List;
 

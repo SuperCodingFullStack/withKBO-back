@@ -4,12 +4,13 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import study.withkbo.UserLoginLogout.Entity.UserEntity;
+import study.withkbo.user.entity.User;
 
 @Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "t_chat_invitation")
 public class ChatInvitation {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,11 +22,11 @@ public class ChatInvitation {
 
     @ManyToOne
     @JoinColumn(name = "inviter_user_id", nullable = false)
-    private UserEntity inviter;
+    private User inviter;
 
     @ManyToOne
     @JoinColumn(name = "invitee_user_id", nullable = false)
-    private UserEntity invitee;
+    private User invitee;
 
     private String status;
 }
