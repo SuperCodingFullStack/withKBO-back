@@ -98,7 +98,7 @@ public class TeamService {
                         .consecutive(team.getConsecutive())
                         .last10Games(team.getLast10Games())
                         .build())
-                .toList();
+                .collect(Collectors.toList());
     }
 
 }

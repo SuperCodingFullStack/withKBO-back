@@ -33,6 +33,16 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // 크롤링 라이브러리
+    implementation 'org.jsoup:jsoup:latest.release'
+
+    // 셀리니움 라이브러리
+    implementation 'org.seleniumhq.selenium:selenium-java:latest.release'
+
+    // 크롬 브라우저
+    implementation 'io.github.bonigarcia:webdrivermanager:latest.release'
+
 }
 
 tasks.named('test') {
