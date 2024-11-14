@@ -7,23 +7,22 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class PartyPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;  // 고유 ID
+    private Long id;  // 고유 ID
 
     @Column(nullable = false)
-    private Integer userIdx;  // 외래키: User 테이블의 ID (작성자)
+    private Long userIdx;  // 외래키: User 테이블의 ID (작성자)
 
     @Column(nullable = false)
-    private Integer teamId;  // 외래키: Team 테이블의 ID (응원팀)
+    private Long teamId;  // 외래키: Team 테이블의 ID (응원팀)
 
     @Column(nullable = false)
-    private Integer gameInfoId;  // 외래키: Game 테이블의 ID (경기정보가져오기)
+    private Long gameInfoId;  // 외래키: Game 테이블의 ID (경기정보가져오기)
 
     @Column(nullable = false, length = 70)
     private String title;  // 글 제목

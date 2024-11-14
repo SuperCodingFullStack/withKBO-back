@@ -5,19 +5,18 @@ import lombok.*;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Hit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;  // 댓글 고유 ID
+    private Long id;  // 댓글 고유 ID
 
     @Column(nullable = false)
-    private Integer userIdx;  // 외래키: User 테이블의 ID (작성자)
+    private Long userIdx;  // 외래키: User 테이블의 ID (작성자)
 
     @Column(nullable = false)
-    private Integer partyPostId;  // 외래키: PartyPost 테이블의 ID (어떤 게시글을 조회한 건가)
+    private Long partyPostId;  // 외래키: PartyPost 테이블의 ID (어떤 게시글을 조회한 건가)
 
 }

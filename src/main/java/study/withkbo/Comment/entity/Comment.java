@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,13 +16,13 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;  // 댓글 고유 ID
+    private Long id;  // 댓글 고유 ID
 
     @Column(nullable = false)
-    private Integer userIdx;  // 외래키: User 테이블의 ID (작성자)
+    private Long userIdx;  // 외래키: User 테이블의 ID (작성자)
 
     @Column(nullable = false)
-    private Integer partyPostId;  // 외래키: PartyPost 테이블의 ID (어떤 게시글에 달린 댓글인지)
+    private Long partyPostId;  // 외래키: PartyPost 테이블의 ID (어떤 게시글에 달린 댓글인지)
 
     @Column(nullable = false, length = 150)
     private String content;  // 댓글 내용
