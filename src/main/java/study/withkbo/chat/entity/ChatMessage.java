@@ -2,14 +2,14 @@ package study.withkbo.chat.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import study.withkbo.UserLoginLogout.Entity.UserEntity;
+import study.withkbo.user.entity.User;
 
-import java.util.Date;
 
 @Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "t_chat_message")
 public class ChatMessage {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,7 +20,7 @@ public class ChatMessage {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    private User user;
 
     @Lob // 대용량 데이터 가능해짐
     @Column(nullable = false)

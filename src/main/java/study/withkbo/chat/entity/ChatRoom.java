@@ -13,6 +13,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name="t_chat_room")
 public class ChatRoom {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

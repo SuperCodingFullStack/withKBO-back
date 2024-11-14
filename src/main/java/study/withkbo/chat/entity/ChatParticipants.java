@@ -4,12 +4,13 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import study.withkbo.UserLoginLogout.Entity.UserEntity;
+import study.withkbo.user.entity.User;
 
 @Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "t_chat_participants")
 public class ChatParticipants {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,5 +22,5 @@ public class ChatParticipants {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    private User user;
 }
