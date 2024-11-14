@@ -16,14 +16,10 @@ import java.util.List;
 public class ChatRoom {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idx;
+    private Long id;
 
     @Column(name = "room_name", nullable = false, unique = true)
     private String roomName;
-
-    @Temporal(TemporalType.TIMESTAMP) // 날짜,시간 값을 TIMESTAMP 형식으로 저장
-    @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP") // 기본값을 현재 시간으로 설정
-    private Date createdAt;
 
     // Users에서도 추가해줄것,
     // cascade는 전파 수행이고 Chatroom의 변경사항이 ChatParticipants에 자동으로 변경
