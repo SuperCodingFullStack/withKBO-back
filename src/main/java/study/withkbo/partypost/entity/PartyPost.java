@@ -48,4 +48,9 @@ public class PartyPost {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;  // 글 작성 시간
+
+    //혜정 코드
+    public PartyPost(Long partyPostId) {
+        this.id = partyPostId;
+    }
 }
