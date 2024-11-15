@@ -2,25 +2,34 @@ package study.withkbo.party.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import study.withkbo.partypost.entity.PartyPost;
+import study.withkbo.user.entity.User;
 
 @Entity
 @Getter
 @Table(name = "t_party")
+@NoArgsConstructor
 public class Party {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //연관관계 설정 예정입니다.
-    private Long partyPostId;
 
-    //연관관계 설정 예정입니다.
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "part_post_id")
+    private PartyPost partyPost;
 
-    //연관관계 설정 예정입니다.
-    private Long teamId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
 
     @Column(nullable = false, columnDefinition = "boolean default false" )
     private Boolean accept;
 
 
+    public Party(Long partyPostId, User user) {
+        this.user = user;
+        this.partyPost = new PartyPost(partyPostId);
+    }
 }
