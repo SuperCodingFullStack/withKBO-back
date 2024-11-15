@@ -21,8 +21,8 @@ public class PartyController {
     //임시 userId 생성
     User user = new User();
 
-    @PostMapping("/{party_post_id}") //user 구현 후 userid 추가 예정
-    public PartyCreateResponseDto createParty(@PathVariable("party_post_id") Long partyPostId) {
+    @PostMapping("/{partyPostId}") //user 구현 후 userid 추가 예정
+    public PartyCreateResponseDto createParty(@PathVariable("partyPostId") Long partyPostId) {
         return partyService.createParty(partyPostId, user);
     }
 
@@ -31,8 +31,8 @@ public class PartyController {
         return partyService.getPartyList(user);
     }
 
-    @DeleteMapping("/{party_id}")//user 구현 후 userid 추가 예정
-    public void deleteParty(@PathVariable("party_id") Long partyId) {
+    @DeleteMapping("/{partyId}")//user 구현 후 userid 추가 예정
+    public void deleteParty(@PathVariable("partyId") Long partyId) {
         partyService.deleteParty(partyId, user);
     }
 }
