@@ -16,7 +16,7 @@ public class Party {
 
 
     @ManyToOne
-    @JoinColumn(name = "part_post_id")
+    @JoinColumn(name = "party_post_id")
     private PartyPost partyPost;
 
     @ManyToOne
