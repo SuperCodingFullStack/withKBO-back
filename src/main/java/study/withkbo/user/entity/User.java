@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import study.withkbo.common.BaseTime;
+import study.withkbo.team.entity.Team;
 
 @Table(name = "t_user")
 @Entity
@@ -12,11 +14,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class User extends DateTime {
+public class User extends BaseTime {
 
     @Id // 프라이머리 키 지정
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name="team_id")
+    private Team team;
 
     @Column(nullable = false, length = 100)
     private String uEmail;
