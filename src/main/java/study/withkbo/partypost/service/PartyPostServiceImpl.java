@@ -1,5 +1,6 @@
 package study.withkbo.partypost.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,16 +13,10 @@ import study.withkbo.partypost.service.mapper.PartyPostMapper;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PartyPostServiceImpl implements PartyPostService {
 
     private final PartyPostRepository partyPostRepository;
-    private final PartyPostMapper partyPostMapper;
-
-
-    public PartyPostServiceImpl(PartyPostRepository partyPostRepository, PartyPostMapper partyPostMapper) {
-        this.partyPostRepository = partyPostRepository;
-        this.partyPostMapper = partyPostMapper;
-    }
 
 //    @Override
 //    // id를 가지고 게시글을 가져오기.
@@ -70,7 +65,7 @@ public class PartyPostServiceImpl implements PartyPostService {
 
     public Page<PartyPostResponseDto> findAllWithPageable(Pageable pageable) {
         return partyPostRepository.findAll(pageable)
-                .map(partyPostMapper::partyPostToPartyPostResponseDto);  // MapStruct 사용
+                .map(PartyPostResponseDto::fromEntity);  // MapStruct 사용
     }
 }
 

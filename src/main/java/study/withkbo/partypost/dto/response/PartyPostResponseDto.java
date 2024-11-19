@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import study.withkbo.comment.dto.response.CommentResponseDto;
+import study.withkbo.partypost.entity.PartyPost;
 
 import java.util.List;
 
@@ -18,28 +19,48 @@ public class PartyPostResponseDto {
     private String userNickname; // 작성자의 이름 (게시글 안에서 표시될 이름)
     private String userImg; // 작성자의 프로필 이미지 URL
 
-//    private String title; // 게시글 제목
-//    private String content; // 게시글 내용
-//    private String matchImg; // 경기 정보와 관련된 이미지 URL
+    private String title; // 게시글 제목
+    private String content; // 게시글 내용
+    private String myTeamImg;
+    private String opposingTeam;// 경기 정보와 관련된 이미지 URL
     // 상대팀 이미지
     // 우리팀 이미지
     // 분할 연동
 
-//    private String matchLoc; // 경기 장소 (위도, 경도 값, 지도 API 표시용)
-    // 경기장 이름에 스트링으로 받고 앞단에서 위도와 경도를 따로 저장한 뒤 이름을 가지고 호출한다.
-    //위도
-    //경도 따로 받기
+    private String latitude;// 위도
+    private String longitude;// 경도
+    private String matchDate; // 경기 일정 (예: "2024-12-31 18:00")
 
-//    private String matchDate; // 경기 일정 (예: "2024-12-31 18:00")
-
-//    private Integer maxPeopleNum; // 최대 참여 인원
-//    private Integer currentPeopleNum; // 현재 참여 인원
-
-//    private Integer likeCount; // 좋아요 수
-//    private Integer hitCount; // 조회수
-
+    private Integer maxPeopleNum; // 최대 참여 인원
+    private Integer currentPeopleNum; // 현재 참여 인원
+    private Integer likeCount; // 좋아요 수
+    private Integer hitCount; // 조회수
     private String createAt; // 게시글 작성일시 (예: "2024-12-01 12:00")
+
 
     @Builder.Default
     private List<CommentResponseDto> comments = List.of(); // 해당 게시글에 달린 댓글들 (댓글 목록)
+
+    public static PartyPostResponseDto fromEntity(PartyPost partyPost) {
+        return PartyPostResponseDto.builder()
+                .userNickname(partyPost.getUser().getUNickname()) // 작성자 닉네임
+                .userImg(partyPost.getUser().getProfileImg()) // 프로필 이미지
+                .title(partyPost.getTitle()) // 게시글 제목
+                .content(partyPost.getContent()) // 게시글 내용
+//                .myTeamImg(partyPost.getGame().해당하시는 우리팀객체 접근().우리팀이미지 가져오기()) // 우리 팀 이미지
+//                .opposingTeam(partyPost.getGame()..해당하는 상대팀객체 접근().상대팀이미지 가져오기()) // 상대팀 정보
+//                .latitude(partyPost.getGame().get우리팀 경기구장?().getLatitude()) // 위치 위도
+//                .longitude(partyPost.getGame().get상대팀().getLongitude()) // 위치 경도
+//                .matchDate(partyPost.getGame().getMatchInfo().toString()) // 경기 일정
+                .maxPeopleNum(partyPost.getMaxPeopleNum()) // 최대 참여 인원
+                .currentPeopleNum(partyPost.getCurrentPeopleNum()) // 현재 참여 인원
+                .likeCount(partyPost.getLikeCount()) // 좋아요 수
+                .hitCount(partyPost.getHitCount()) // 조회수
+                .createAt(partyPost.getCreatedDate().toString()) // 작성 일시
+                .comments(partyPost.getComments().stream()
+                        .map(CommentResponseDto::fromEntity) // 댓글 리스트 매핑
+                        .toList())
+                .build();
+    }
 }
+
