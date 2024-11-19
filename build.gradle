@@ -43,6 +43,9 @@ dependencies {
     // 크롬 브라우저
     implementation 'io.github.bonigarcia:webdrivermanager:latest.release'
 
+    // swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
 }
 
 tasks.named('test') {

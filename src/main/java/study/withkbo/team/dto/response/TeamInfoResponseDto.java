@@ -1,4 +1,4 @@
-package study.withkbo.team.dto;
+package study.withkbo.team.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TeamInfoResponse {
+public class TeamInfoResponseDto {
 
     private Long teamId;
     private int ranking;
@@ -21,4 +21,8 @@ public class TeamInfoResponse {
     private Float winRate;
     private String consecutive;
     private String last10Games;
+    private String stadium;
+    private Double latitude;
+    private Double longitude;
+
 }
