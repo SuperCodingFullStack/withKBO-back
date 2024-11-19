@@ -45,7 +45,7 @@ public class GameService {
             gameInfoToEntity(gameInfo, teamMap);
 
         } catch (Exception e) {
-            throw new CommonException(CommonError.INTERNAL_SERVER_ERROR, CommonError.INTERNAL_SERVER_ERROR.getMessage());
+            throw new CommonException(CommonError.INTERNAL_SERVER_ERROR);
         }
 
         gamesSearchMonth = gameRepository.findByMatchDate(month);
@@ -53,7 +53,7 @@ public class GameService {
         if (gamesSearchMonth != null && !gamesSearchMonth.isEmpty()) {
             return gameToDto(gamesSearchMonth);
         } else {
-            throw new CommonException(CommonError.GAME_NOT_FOUND, CommonError.GAME_NOT_FOUND.getMessage());
+            throw new CommonException(CommonError.GAME_NOT_FOUND);
         }
     }
 
