@@ -12,6 +12,6 @@ public class UserService {
     private static UserJpaRepository userJpaRepository;
 
     public User signUp(UserBody userBody) {
-
+        
     }
 }

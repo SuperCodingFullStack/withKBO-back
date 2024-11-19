@@ -43,6 +43,10 @@ dependencies {
     // 크롬 브라우저
     implementation 'io.github.bonigarcia:webdrivermanager:latest.release'
 
+    // Mapstruct
+    implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+
 }
 
 tasks.named('test') {

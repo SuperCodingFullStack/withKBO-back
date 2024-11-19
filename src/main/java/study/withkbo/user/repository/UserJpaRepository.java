@@ -6,4 +6,5 @@ import study.withkbo.user.entity.User;
 
 @Repository
 public interface UserJpaRepository extends JpaRepository<User, Long> {
+
 }
