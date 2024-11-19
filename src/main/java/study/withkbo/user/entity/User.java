@@ -42,7 +42,7 @@ public class User extends BaseTime {
     @Column(nullable = false)
     private Boolean uPhoneAuth;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 100)
     private String uAddress;
 
     @Column(nullable = false)
