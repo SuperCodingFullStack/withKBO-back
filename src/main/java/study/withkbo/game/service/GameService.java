@@ -2,6 +2,7 @@ package study.withkbo.game.service;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -9,51 +10,133 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import study.withkbo.exception.common.CommonError;
+import study.withkbo.exception.common.CommonException;
+import study.withkbo.game.dto.response.GameInfoResponseDto;
+import study.withkbo.game.entity.Game;
 import study.withkbo.game.repository.GameRepository;
+import study.withkbo.team.entity.Team;
+import study.withkbo.team.repository.TeamRepository;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GameService {
 
     private final GameRepository gameRepository;
+    private final TeamRepository teamRepository;
+    private WebDriver driver;
 
-    public Object selectGameInfo() {
-        WebDriverManager.chromedriver().setup();
-
-        WebDriver driver = null;
+    @Transactional
+    public List<GameInfoResponseDto> selectGameInfo(String month) {
+        List<Game> gamesSearchMonth;
 
         try {
+            Element doc = gameInfoCrawling();
+            Elements gameInfo = doc.select("#scheduleList tr");
+            List<Team> teams = searchTeamNames(gameInfo);
+            Map<String, Team> teamMap = stringTeamToMap(teams);
+            gameInfoToEntity(gameInfo, teamMap);
+
+        } catch (Exception e) {
+            throw new CommonException(CommonError.INTERNAL_SERVER_ERROR);
+        }
+
+        gamesSearchMonth = gameRepository.findByMatchDate(month);
+
+        if (gamesSearchMonth != null && !gamesSearchMonth.isEmpty()) {
+            return gameToDto(gamesSearchMonth);
+        } else {
+            throw new CommonException(CommonError.GAME_NOT_FOUND);
+        }
+    }
+
+    @Scheduled(cron = "0 0 2 * * *")
+    public Document gameInfoCrawling() {
+        if (driver == null) {
+            WebDriverManager.chromedriver().setup();
             ChromeOptions options = new ChromeOptions();
             options.addArguments("headless");
             driver = new ChromeDriver(options);
+        }
 
-            driver.get("https://sports.daum.net/schedule/kbo");
-            Document doc = Jsoup.parse(driver.getPageSource());
+        driver.get("https://sports.daum.net/schedule/kbo");
+        return Jsoup.parse(driver.getPageSource());
+    }
 
-            Elements gameInfo = doc.select("#scheduleList tr");
+    private List<Team> searchTeamNames(Elements gameInfo) {
+        List<String> homeTeamNames = gameInfo.stream()
+                .map(gameInfoElement -> gameInfoElement.select("td.td_team div.info_team.team_home").text().split(" ")[0])
+                .collect(Collectors.toList());
+        return teamRepository.findByTeamNameIn(homeTeamNames);
+    }
 
-            for(Element gameInfoElement : gameInfo){
-                String date = gameInfoElement.select("td.td_date").text();
-                String time = gameInfoElement.select("td.td_time").text();
-                String stadium = gameInfoElement.select("td.td_area").text();
-                String homeTeam = gameInfoElement.select("td.td_team div.info_team.team_home").text();
-                String awayTeam = gameInfoElement.select("td.td_team div.info_team.team_away").text();
-                String sort = gameInfoElement.select("td.td_sort").text();
-                String tv = gameInfoElement.select("td.td_tv").text();
-                System.out.println(date + " " + time + " " + stadium + " " + homeTeam + " " + awayTeam + " " + sort + " " + tv);
+    private Map<String, Team> stringTeamToMap(List<Team> teams) {
+        return teams.stream()
+                .collect(Collectors.toMap(Team::getTeamName, team -> team));
+    }
 
-            }
+    @Transactional
+    public void gameInfoToEntity(Elements gameInfo, Map<String, Team> teamMap) {
+        List<Game> newGames = new ArrayList<>();
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        for (Element gameInfoElement : gameInfo) {
+            String homeTeamName = getHomeTeamName(gameInfoElement);
+            String matchDate = getMatchDate(gameInfoElement);
+            String awayTeamName = getAwayTeamName(gameInfoElement);
 
-        } finally {
-            if (driver != null) {
-                driver.quit();
+            Team team = teamMap.get(homeTeamName);
+
+            if (team != null && !isGameAlreadyExists(matchDate, homeTeamName, awayTeamName)) {
+                Game newGame = createNewGame(gameInfoElement, team);
+                newGames.add(newGame);
             }
         }
 
-        return "";
+        if (!newGames.isEmpty()) {
+            gameRepository.saveAll(newGames);
+        }
+    }
+
+    private String getHomeTeamName(Element gameInfoElement) {
+        return gameInfoElement.select("td.td_team div.info_team.team_home").text().split(" ")[0];
+    }
+
+    private String getMatchDate(Element gameInfoElement) {
+        return gameInfoElement.select("td.td_date").text();
+    }
+
+    private String getAwayTeamName(Element gameInfoElement) {
+        return gameInfoElement.select("td.td_team div.info_team.team_away").text().split(" ")[0];
+    }
+
+    private boolean isGameAlreadyExists(String matchDate, String homeTeamName, String awayTeamName) {
+        return gameRepository.findByMatchDateAndHomeTeamAndAwayTeam(matchDate, homeTeamName, awayTeamName).isPresent();
+    }
+
+    private Game createNewGame(Element gameInfoElement, Team team) {
+        return new Game().crawledToGameEntity(gameInfoElement, team);
+    }
+
+    private List<GameInfoResponseDto> gameToDto(List<Game> gamesSearchMonth) {
+        return gamesSearchMonth.stream().map(games -> GameInfoResponseDto.builder()
+                        .gameId(games.getId())
+                        .matchDate(games.getMatchDate())
+                        .matchTime(games.getMatchTime())
+                        .homeTeam(games.getTeam().getTeamName())
+                        .homeTeamScore(games.getHomeTeamScore())
+                        .awayTeam(games.getAwayTeam())
+                        .awayTeamScore(games.getAwayTeamScore())
+                        .stadium(games.getTeam().getStadium())
+                        .gameSort(games.getGameSort())
+                        .tv(games.getTv())
+                        .build())
+                .toList();
     }
 }
