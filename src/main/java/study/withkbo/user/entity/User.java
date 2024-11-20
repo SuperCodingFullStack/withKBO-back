@@ -1,16 +1,17 @@
 package study.withkbo.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import study.withkbo.common.BaseTime;
 import study.withkbo.team.entity.Team;
 
 @Table(name = "t_user")
 @Entity
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -49,7 +50,7 @@ public class User extends BaseTime {
     private String uStatus;
 
     @Column(nullable = false, length = 150)
-    private String ProfileImg;
+    private String profileImg;
 
 }
 
