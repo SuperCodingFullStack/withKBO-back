@@ -1,7 +1,10 @@
 package study.withkbo.friend.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.web.bind.annotation.*;
+import study.withkbo.common.response.ApiResponseDto;
+import study.withkbo.common.response.MessageType;
 import study.withkbo.friend.dto.request.FriendRequestDto;
 import study.withkbo.friend.dto.response.FriendResponseDto;
 import study.withkbo.friend.service.FriendService;
@@ -19,28 +22,30 @@ public class FriendController {
     private User user = new User();
 
     @PostMapping()
-    public FriendResponseDto sendFriendRequest(@RequestParam FriendRequestDto requestDto, User user){
-
-        return friendService.sendFriendRequest(requestDto, user);
+    public ApiResponseDto<FriendResponseDto> sendFriendRequest(@RequestParam FriendRequestDto requestDto, User user){
+        FriendResponseDto result = friendService.sendFriendRequest(requestDto, user);
+        return ApiResponseDto.success(MessageType.SEND, result);
     }
 
     @GetMapping()
-    public List<FriendResponseDto> getFriendList(User user, @RequestParam(name = "type") String type){
-
-        return friendService.getFriendList(user, type);
+    public ApiResponseDto<List<FriendResponseDto>> getFriendList(User user, @RequestParam(name = "type") String type){
+        List<FriendResponseDto> result = friendService.getFriendList(user, type);
+        return ApiResponseDto.success(MessageType.RETRIEVE, result);
     }
 
     @DeleteMapping()
-    public FriendResponseDto blockFriend(@RequestParam FriendRequestDto requestDto,User user){
+    public ApiResponseDto<FriendResponseDto> blockFriend(@RequestParam FriendRequestDto requestDto,User user){
 
-        return friendService.blockFriend(requestDto, user);
+        FriendResponseDto result = friendService.blockFriend(requestDto, user);
+        return ApiResponseDto.success(MessageType.DELETE, result);
     }
 
     @PutMapping()
-    public FriendResponseDto acceptFriendRequest(@RequestParam FriendRequestDto requestDto,User user,
+    public ApiResponseDto<FriendResponseDto> acceptFriendRequest(@RequestParam FriendRequestDto requestDto,User user,
                                                  @RequestParam(name = "accept") String accept){
 
-        return friendService.acceptFriendRequest(requestDto,user,accept);
+        FriendResponseDto result = friendService.acceptFriendRequest(requestDto,user,accept);
+        return ApiResponseDto.success(MessageType.UPDATE, result);
     }
 
 }

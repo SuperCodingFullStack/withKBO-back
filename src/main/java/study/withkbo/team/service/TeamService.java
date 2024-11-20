@@ -63,13 +63,13 @@ public class TeamService {
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36")
                     .get();
         } catch (IOException e) {
-            throw new CommonException(CommonError.CRAWLING_ERROR, CommonError.CRAWLING_ERROR.getMessage());
+            throw new CommonException(CommonError.CRAWLING_ERROR);
         }
 
         Elements baseballTeams = doc.select("#regularTeamRecordList_table > tr");
 
         if (baseballTeams.isEmpty()) {
-            throw new CommonException(CommonError.NO_TEAM_INFO, CommonError.NO_TEAM_INFO.getMessage());
+            throw new CommonException(CommonError.NO_TEAM_INFO);
         }
 
         return baseballTeams;
@@ -90,7 +90,7 @@ public class TeamService {
                 .ifPresentOrElse(
                         teamRepository::saveAll,
                         () -> {
-                            throw new CommonException(CommonError.INTERNAL_SERVER_ERROR, CommonError.INTERNAL_SERVER_ERROR.getMessage());
+                            throw new CommonException(CommonError.INTERNAL_SERVER_ERROR);
                         }
                 );
     }
