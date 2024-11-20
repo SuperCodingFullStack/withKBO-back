@@ -23,7 +23,10 @@ public class UserService {
     @Transactional
     public User signUp(UserBody userBody) {
         User user = userMapper.INSTANCE.userBodyToUser(userBody);
-        return user;
+        user.setUPwd(passwordEncoder.encode(userBody.getPwd()));
+        user.setUStatus("Y");
+
+        return userJpaRepository.save(user);
     }
 
     public List<UserDTO> getUserList() {

@@ -12,6 +12,13 @@ public interface UserMapper {
 
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
+    @Mapping(source="email", target="uEmail")
+    @Mapping(source="pwd", target="uPwd")
+    @Mapping(source="name", target="uName")
+    @Mapping(source="nickname", target="uNickname")
+    @Mapping(source="phone", target="uPhone")
+    @Mapping(source="phoneAuth", target="uPhoneAuth")
+    @Mapping(source="address", target="uAddress")
     User userBodyToUser(UserBody userBody);
 
     UserDTO userEntityToUserDTO(User user);

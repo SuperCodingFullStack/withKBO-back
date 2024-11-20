@@ -12,28 +12,20 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserBody {
 
-    @JsonProperty("uEmail")
-    private String uEmail;
+    private String email;
 
-    @JsonProperty("uPwd")
-    private String uPwd;
+    private String pwd;
 
-    @JsonProperty("uName")
-    private String uName;
+    private String name;
 
-    @JsonProperty("uNickname")
-    private String uNickname;
+    private String nickname;
 
-    @JsonProperty("uPhone")
-    private String uPhone;
+    private String phone;
 
-    @JsonProperty("uPhoneAuth")
-    private boolean uPhoneAuth;
+    private boolean phoneAuth;
 
-    @JsonProperty("uAddress")
-    private String uAddress;
+    private String address;
 
-    @JsonProperty("profileImg")
     private String profileImg;
 
 }
