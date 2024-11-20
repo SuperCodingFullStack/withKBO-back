@@ -14,8 +14,25 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class PartyPostResponseDto {
+    /*
+    *  id: 1(게시글 아이디)
+    *  userNickname: bin (작성자 닉네임)
+    *  userImg: 프로필 사진 주소
+    *  title: 롯데 경기보러 가실분
+    *  content: 야구장 첨가봐요 혼자가기 무서운데 같이 가실분
+    *  myTeamImg: 롯데 구단 이미지
+    *  opposingTeam: NC 구단 이미지
+    *  latitude: 35.19
+    *  longitude: 129.06
+    *  matchDate: 2024-12-31 18:00
+    *  maxPeopleNum: 2
+    *  currentPeopleNum: 1
+    *  likeCount: 0
+    *  hitCount: 10
+    *  createAt: 2024-12-01 12:00
+    * */
 
-//    private Long id; // 해당 게시글의 아이디(게시글 목록에서 클릭 시 이동할 때 필요)
+    private Long id; // 해당 게시글의 아이디(게시글 목록에서 클릭 시 이동할 때 필요)
     private String userNickname; // 작성자의 이름 (게시글 안에서 표시될 이름)
     private String userImg; // 작성자의 프로필 이미지 URL
 
@@ -43,6 +60,7 @@ public class PartyPostResponseDto {
 
     public static PartyPostResponseDto fromEntity(PartyPost partyPost) {
         return PartyPostResponseDto.builder()
+                .id(partyPost.getId())
                 .userNickname(partyPost.getUser().getUNickname()) // 작성자 닉네임
                 .userImg(partyPost.getUser().getProfileImg()) // 프로필 이미지
                 .title(partyPost.getTitle()) // 게시글 제목

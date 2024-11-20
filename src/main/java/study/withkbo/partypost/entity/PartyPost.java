@@ -59,4 +59,6 @@ public class PartyPost  extends BaseTime {
     private List<Comment> comments = List.of();;  // 해당 게시글에 달린 댓글들
 
 
+    //혜정 코드
+    public PartyPost(Long partyPostId) { this.id = partyPostId; }
 }
