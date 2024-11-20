@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of="id",callSuper = false)
 @Table(name = "t_comment")
 public class Comment extends BaseTime {
 

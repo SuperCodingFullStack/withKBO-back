@@ -5,12 +5,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import study.withkbo.exception.common.CommonError;
+import study.withkbo.exception.common.CommonException;
+import study.withkbo.partypost.dto.response.PartyPostPageResponseDto;
 import study.withkbo.partypost.dto.response.PartyPostResponseDto;
+import study.withkbo.partypost.dto.response.PostResponseDto;
 import study.withkbo.partypost.entity.PartyPost;
 import study.withkbo.partypost.repository.PartyPostRepository;
 
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,54 +24,35 @@ public class PartyPostServiceImpl implements PartyPostService {
 
     private final PartyPostRepository partyPostRepository;
 
-//    @Override
-//    // id를 가지고 게시글을 가져오기.
-//    public Optional<PartyPost> getPartyPostById(Long postId) {
-//        return partyPostRepository.findById(postId);
-//    }
-//
-//    @Override
-//    // 게시글을 작성하기
-//    public PartyPost createPartyPost(PartyPost partyPost) {
-//        return partyPostRepository.save(partyPost);
-//    }
-//
-//    @Override
-//    // 게시글을 수정하기
-//    public PartyPost updatePartyPost(Long postId, PartyPost updatedPartyPost) {
-//        return partyPostRepository.findById(postId)
-//                .map(partyPost -> {
-//                    partyPost.setTitle(updatedPartyPost.getTitle());
-//                    partyPost.setContent(updatedPartyPost.getContent());
-//                    partyPost.setMaxPeopleNum(updatedPartyPost.getMaxPeopleNum());
-//                    partyPost.setCurrentPeopleNum(updatedPartyPost.getCurrentPeopleNum());
-//                    return partyPostRepository.save(partyPost);
-//                }).orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
-//    }
-//
-//    @Override
-//    public void deletePartyPost(Long postId) {
-//        partyPostRepository.deleteById(postId);
-//    }
-//
-//    @Override
-//    public Page<PartyPost> getAllPartyPosts(Pageable pageable) {
-//        return null;
-//    }
-//
-//    @Override
-//    public Page<PartyPost> getAllPartyPosts(Pageable pageable) {
-//        return partyPostRepository.findAll(pageable);
-//    }
-//
-//    @Override
-//    public Page<PartyPost> searchPartyPosts(String keyword, Pageable pageable) {
-//        return partyPostRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable);
-//    }
+    // 게시글 아이디로 상세게시글 가져오기
+    @Override
+    public PostResponseDto getPartyPostById(Long id) {
+        PartyPost partyPost = partyPostRepository.findById(id)
+                .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
 
-    public Page<PartyPostResponseDto> findAllWithPageable(Pageable pageable) {
-        return partyPostRepository.findAll(pageable)
-                .map(PartyPostResponseDto::fromEntity);  // MapStruct 사용
+        return PostResponseDto.fromEntity(partyPost);  // 엔티티를 DTO로 변환하여 반환
     }
+
+    // 페이지네이션을 적용하여 게시글 목록 조회
+    public PartyPostPageResponseDto findPartyPostsWithPageable(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PartyPost> partyPostPage = partyPostRepository.findAll(pageable);
+
+        // 게시글 목록을 PartyPostResponseDto로 변환
+        List<PartyPostResponseDto> partyPostResponseDtos = partyPostPage.getContent().stream()
+                .map(PartyPostResponseDto::fromEntity)  // 엔티티를 DTO로 변환
+                .collect(Collectors.toList());
+
+        // 페이지네이션 정보와 게시글 목록을 DTO로 반환
+        return PartyPostPageResponseDto.fromPartyPostResponseDto(
+                partyPostResponseDtos,
+                partyPostPage.getTotalPages(),
+                partyPostPage.getTotalElements(),
+                partyPostPage.getNumber(),
+                partyPostPage.getSize()
+        );
+    }
+
+
 }
 
