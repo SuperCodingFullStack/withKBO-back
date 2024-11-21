@@ -1,6 +1,7 @@
 package study.withkbo.user.entity;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.sql.Date;
 @Entity
 @Getter
 @NoArgsConstructor
+@EqualsAndHashCode(of="id",callSuper = false)
 public class User {
 
     @Id // 프라이머리 키 지정
