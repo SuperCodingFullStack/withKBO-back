@@ -1,5 +1,6 @@
 package study.withkbo.partypost.service;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +25,8 @@ public class PartyPostServiceImpl implements PartyPostService {
 
     private final PartyPostRepository partyPostRepository;
 
-    // 게시글 아이디로 상세게시글 가져오기
+
+//    @Operation("게시글 아이디로 상세게시글 가져오기")
     @Override
     public PostResponseDto getPartyPostById(Long id) {
         PartyPost partyPost = partyPostRepository.findById(id)
