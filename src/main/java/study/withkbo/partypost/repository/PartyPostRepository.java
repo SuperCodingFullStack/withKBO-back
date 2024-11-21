@@ -1,15 +1,17 @@
 package study.withkbo.partypost.repository;
 
+import org.springframework.lang.NonNull;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import study.withkbo.partypost.entity.PartyPost;
 
-import java.util.List;
+import java.util.Optional;
 
 
 public interface PartyPostRepository extends JpaRepository<PartyPost, Long> {
 
-    // 모든 게시글을 조회하는 것
-    // 페이지로 나누어서 조회하는 것
-    // 조건에 따른 조회 글작성자, 글내용, 작성일 순?
-    List<PartyPost> findByTitleContaining(String keyword);
+    // PartyPost와 연관된 User, Game, Comments 엔티티를 즉시 로딩
+    @EntityGraph(attributePaths = {"user", "game", "comments"})
+    Optional<PartyPost> findById(@NonNull Long postId);
+
 }

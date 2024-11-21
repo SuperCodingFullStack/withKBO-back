@@ -1,6 +1,5 @@
 package study.withkbo.user.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import study.withkbo.common.BaseTime;
@@ -13,6 +12,7 @@ import study.withkbo.team.entity.Team;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of="id",callSuper = false)
 public class User extends BaseTime {
 
     @Id // 프라이머리 키 지정
@@ -26,29 +26,36 @@ public class User extends BaseTime {
     @Column(nullable = false, length = 100, name="uEmail")
     private String uEmail;
 
-    @Column(nullable = false, length = 30, name="u_pwd",columnDefinition = "LONGTEXT")
+    @Column(nullable = false, length = 30)
     private String uPwd;
 
-    @Column(nullable = false, length = 30, name="u_name")
+    @Column(nullable = false, length = 30)
     private String uName;
 
-    @Column(nullable = true, length = 30, name="u_nickname")
+    @Column(nullable = true, length = 30)
     private String uNickname;
 
-    @Column(nullable = false, length = 20, name="u_phone")
+    @Column(nullable = false, length = 20)
     private String uPhone;
 
-    @Column(nullable = false,name="u_phoneAuth")
+    @Column(nullable = false)
     private Boolean uPhoneAuth;
 
-    @Column(nullable = false, length = 100, name="u_address")
+    @Column(nullable = false, length = 30)
     private String uAddress;
 
-    @Column(nullable = false, name="u_status")
+    @Column(nullable = false)
     private String uStatus;
 
-    @Column(nullable = false, length = 150, name="profile_img")
-    private String profileImg;
+    @Column(nullable = false)
+    private Date createdAt;
+
+    @Column(nullable = false)
+    private Date deletedAt;
+
+    @Column(nullable = false, length = 150)
+    private String ProfileImg;
+
 
 }
 

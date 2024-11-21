@@ -18,5 +18,4 @@ public abstract class BaseTime {
     @Column(updatable = false)
     private LocalDateTime createdDate;
 
-
 }
