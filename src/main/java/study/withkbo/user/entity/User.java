@@ -47,12 +47,6 @@ public class User extends BaseTime {
     @Column(nullable = false)
     private String uStatus;
 
-    @Column(nullable = false)
-    private Date createdAt;
-
-    @Column(nullable = false)
-    private Date deletedAt;
-
     @Column(nullable = false, length = 150)
     private String ProfileImg;
 
