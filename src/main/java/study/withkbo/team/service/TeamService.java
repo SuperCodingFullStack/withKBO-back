@@ -110,6 +110,7 @@ public class TeamService {
                         .stadium(team.getStadium())
                         .latitude(team.getLatitude())
                         .longitude(team.getLongitude())
+                        .logoImage(team.getLogoImg())
                         .build())
                 .toList();
     }

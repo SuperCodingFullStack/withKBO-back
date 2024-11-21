@@ -41,6 +41,7 @@ public class Team {
     private String stadium;
     private Double latitude;
     private Double longitude;
+    private String logoImg;
 
     public Team crawledToTeamEntity(Element baseballTeam) {
         this.ranking = Integer.parseInt(getTextSafe(baseballTeam.selectFirst("th")));
@@ -76,46 +77,57 @@ public class Team {
     private String StadiumByTeamName(String teamName) {
         switch (teamName) {
             case "KIA":
+                this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/KIA_LOGO.png";
                 this.latitude = 35.1606;
                 this.longitude = 126.8535;
                 return "광주-KIA 챔피언스필드";
             case "두산":
+                this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/DOOSAN_LOGO.png";
                 this.latitude = 37.5126;
                 this.longitude = 127.0712;
                 return "잠실 야구장";
             case "삼성":
+                this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/SAMSUNG_LOGO.png";
                 this.latitude = 35.8676;
                 this.longitude = 128.6014;
                 return "대구 삼성라이온즈 파크";
             case "LG":
+                this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/LG_LOGO.png";
                 this.latitude = 37.5126;
                 this.longitude = 127.0712;
                 return "잠실 야구장";
             case "키움":
+                this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/KIWOOM_LOGO.png";
                 this.latitude = 37.5267;
                 this.longitude = 126.9028;
                 return "고척스카이돔";
             case "SSG":
+                this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/SSG_LOGO.png";
                 this.latitude = 37.4550;
                 this.longitude = 126.7045;
                 return "인천 SSG 랜더스 필드";
             case "한화":
+                this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/HANWHA_LOGO.png";
                 this.latitude = 36.3506;
                 this.longitude = 127.3849;
                 return "대전 한화생명 이글스 파크";
             case "롯데":
+                this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/LOTTE_LOGO.png";
                 this.latitude = 35.1453;
                 this.longitude = 129.0584;
                 return "사직 야구장";
             case "NC":
+                this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/NC_LOGO.png";
                 this.latitude = 35.2350;
                 this.longitude = 128.6826;
                 return "창원 NC파크";
             case "KT":
+                this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/KT_LOGO.png";
                 this.latitude = 37.2647;
                 this.longitude = 127.0086;
                 return "수원 KT 위즈 파크";
             default:
+                this.logoImg = "";
                 this.latitude = null;
                 this.longitude = null;
                 return "미정";

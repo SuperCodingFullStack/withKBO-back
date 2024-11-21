@@ -24,5 +24,6 @@ public class TeamInfoResponseDto {
     private String stadium;
     private Double latitude;
     private Double longitude;
+    private String logoImage;
 
 }
