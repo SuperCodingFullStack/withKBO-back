@@ -2,7 +2,10 @@ package study.withkbo.friend.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import study.withkbo.exception.common.CommonError;
+import study.withkbo.exception.common.CommonException;
 import study.withkbo.friend.dto.request.FriendRequestDto;
 import study.withkbo.friend.dto.response.FriendResponseDto;
 import study.withkbo.friend.entity.Friend;
@@ -21,7 +24,7 @@ public class FriendService {
 
     public FriendResponseDto sendFriendRequest(FriendRequestDto requestDto, User user) {
         friendRepository.findByFromUserIdAndToUserId(requestDto.getToUserId(), user.getId()).ifPresent(
-                (exist) ->  new RuntimeException("error : already send request")
+                (exist) ->  new CommonException(CommonError.FRIEND_REQUEST_ALREADY_SEND)
         );
 
         Friend sendRequest = friendRepository.save(Friend.builder()
@@ -51,7 +54,7 @@ public class FriendService {
 
 
         if(friendList.isEmpty()){
-            throw new RuntimeException("error : friend list not found");
+            throw new CommonException(CommonError.FRIEND_NOT_FOUND);
         }
 
         return friendList.stream().map(FriendResponseDto::new).toList();
@@ -63,7 +66,7 @@ public class FriendService {
         Friend friend = checkFriend(requestDto, user);
 
         if(friend.getState().equals(State.BLOCK)){
-            throw new RuntimeException("error : already blocked user");
+            throw new CommonException(CommonError.FRIEND_ALREADY_BLOCK);
         }
 
         friend.updateFriend(State.BLOCK);
@@ -76,7 +79,7 @@ public class FriendService {
         Friend friend = checkFriend(requestDto, user);
 
         if (!friend.getState().equals(State.SEND)){
-            throw new RuntimeException("error : 암튼 에러 웅엥엥");
+            throw new CommonException(CommonError.BAD_REQUEST);
         }
 
         if(accept.equals("true")){
@@ -91,7 +94,7 @@ public class FriendService {
     public Friend checkFriend(FriendRequestDto requestDto, User user){
 
         return friendRepository.findByFromUserIdAndToUserId(user.getId(), requestDto.getToUserId())
-                .orElseThrow(()-> new RuntimeException("error : friend not found"));
+                .orElseThrow(()-> new CommonException(CommonError.FRIEND_NOT_FOUND));
 
     }
 }
