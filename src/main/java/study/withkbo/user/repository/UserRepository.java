@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import study.withkbo.user.entity.User;
 
 @Repository
-public interface UserJpaRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
 }

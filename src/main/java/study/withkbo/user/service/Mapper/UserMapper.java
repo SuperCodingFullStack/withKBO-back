@@ -3,8 +3,8 @@ package study.withkbo.user.service.Mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-import study.withkbo.user.dto.request.UserBody;
-import study.withkbo.user.dto.response.UserDTO;
+import study.withkbo.user.dto.request.UserRequestDTO;
+import study.withkbo.user.dto.response.UserResponseDTO;
 import study.withkbo.user.entity.User;
 
 @Mapper(componentModel = "spring")
@@ -19,8 +19,8 @@ public interface UserMapper {
     @Mapping(source="phone", target="uPhone")
     @Mapping(source="phoneAuth", target="uPhoneAuth")
     @Mapping(source="address", target="uAddress")
-    User userBodyToUser(UserBody userBody);
+    User userBodyToUser(UserRequestDTO userRequestDTO);
 
-    UserDTO userEntityToUserDTO(User user);
+    UserResponseDTO userEntityToUserDTO(User user);
 
 }

@@ -2,8 +2,8 @@ package study.withkbo.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import study.withkbo.user.dto.request.UserBody;
-import study.withkbo.user.dto.response.UserDTO;
+import study.withkbo.user.dto.request.UserRequestDTO;
+import study.withkbo.user.dto.response.UserResponseDTO;
 import study.withkbo.user.entity.User;
 import study.withkbo.user.service.UserService;
 
@@ -17,12 +17,12 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public User signUp(@RequestBody UserBody userBody) {
-        return userService.signUp(userBody);
+    public User signUp(@RequestBody UserRequestDTO userRequestDTO) {
+        return userService.signUp(userRequestDTO);
     }
 
     @GetMapping("/userList")
-    public List<UserDTO> getUserList() {
+    public List<UserResponseDTO> getUserList() {
         return userService.getUserList();
     }
 }

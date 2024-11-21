@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserDTO {
+public class UserResponseDTO {
 
     @JsonProperty("u_Email")
     private String uEmail;
