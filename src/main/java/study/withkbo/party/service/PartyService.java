@@ -3,6 +3,8 @@ package study.withkbo.party.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import study.withkbo.exception.common.CommonError;
+import study.withkbo.exception.common.CommonException;
 import study.withkbo.party.dto.response.PartyCreateResponseDto;
 import study.withkbo.party.dto.response.PartyListResponseDto;
 import study.withkbo.party.entity.Party;
@@ -21,7 +23,7 @@ public class PartyService {
     public PartyCreateResponseDto createParty(Long partyPostId, User user) {
 
         if(partyRepository.findByPartyPostIdAndUser(partyPostId, user).isPresent()){
-            throw new RuntimeException("error : party already exists");
+            throw new CommonException(CommonError.PARTY_REQUEST_AlREADY_SEND);
         }
         Party party = partyRepository.save(new Party(partyPostId, user));
         return new PartyCreateResponseDto(party);
@@ -31,7 +33,7 @@ public class PartyService {
         List<Party> partyList = partyRepository.findByUser(user);
         if (partyList.isEmpty()) {
             //예외 임시처리
-            throw new RuntimeException("error : party list is empty");
+            throw new CommonException(CommonError.PARTY_NOT_FOUND);
         }
 
         return partyList.stream().map(PartyListResponseDto::new).toList();
@@ -40,11 +42,11 @@ public class PartyService {
     public void deleteParty(Long partyId, User user) {
 
         Party party = partyRepository.findById(partyId).orElseThrow(
-                () -> new RuntimeException("error : party not found")
+                () -> new CommonException(CommonError.PARTY_NOT_FOUND)
         );
 
         if(party.getUser().getId() != user.getId()){
-            throw new RuntimeException("error : user id not match");
+            throw new CommonException(CommonError.FORBIDDEN);
         }
 
         partyRepository.deleteById(partyId);

@@ -26,7 +26,17 @@ public enum CommonError {
     CRAWLING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "G-002","웹 크롤링 중 오류가 발생했습니다."),
 
     //팀 - 코드 접두사(T)
-    NO_TEAM_INFO(HttpStatus.BAD_REQUEST, "T-001","해당 팀 정보가 없습니다.");
+    NO_TEAM_INFO(HttpStatus.BAD_REQUEST, "T-001","해당 팀 정보가 없습니다."),
+
+    //파티 - 코드접두사(P)
+    PARTY_REQUEST_AlREADY_SEND(HttpStatus.BAD_REQUEST, "P-001","참가 신청을 이미 완료한 파티입니다."),
+    PARTY_NOT_FOUND(HttpStatus.NOT_FOUND,"P-002","해당하는 파티가 존재하지 않습니다."),
+
+
+    //친구 - 코드 접두사(F)
+    FRIEND_REQUEST_ALREADY_SEND(HttpStatus.BAD_REQUEST,"F-001", "친구 신청을 이미 보낸 사용자입니다."),
+    FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND, "F-002", "해당하는 친구가 없습니다."),
+    FRIEND_ALREADY_BLOCK(HttpStatus.BAD_REQUEST, "F-003","이미 차단한 사용자입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

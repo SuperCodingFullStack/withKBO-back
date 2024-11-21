@@ -2,6 +2,8 @@ package study.withkbo.party.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import study.withkbo.common.response.ApiResponseDto;
+import study.withkbo.common.response.MessageType;
 import study.withkbo.party.dto.response.PartyCreateResponseDto;
 import study.withkbo.party.dto.response.PartyListResponseDto;
 import study.withkbo.party.service.PartyService;
@@ -22,17 +24,19 @@ public class PartyController {
     User user = new User();
 
     @PostMapping("/{partyPostId}") //user 구현 후 userid 추가 예정
-    public PartyCreateResponseDto createParty(@PathVariable("partyPostId") Long partyPostId) {
-        return partyService.createParty(partyPostId, user);
+    public ApiResponseDto<PartyCreateResponseDto> createParty(@PathVariable("partyPostId") Long partyPostId) {
+        return ApiResponseDto.success(MessageType.SEND,partyService.createParty(partyPostId, user));
     }
 
     @GetMapping()//user 구현 후 userid 추가 예정
-    public List<PartyListResponseDto> getPartyList() {
-        return partyService.getPartyList(user);
+    public ApiResponseDto<List<PartyListResponseDto>> getPartyList() {
+
+        return ApiResponseDto.success(MessageType.RETRIEVE,partyService.getPartyList(user));
     }
 
     @DeleteMapping("/{partyId}")//user 구현 후 userid 추가 예정
-    public void deleteParty(@PathVariable("partyId") Long partyId) {
+    public ApiResponseDto deleteParty(@PathVariable("partyId") Long partyId) {
         partyService.deleteParty(partyId, user);
+        return ApiResponseDto.success(MessageType.DELETE,partyId);
     }
 }
