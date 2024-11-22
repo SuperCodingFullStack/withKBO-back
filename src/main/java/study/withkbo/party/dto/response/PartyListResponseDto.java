@@ -36,7 +36,7 @@ public class PartyListResponseDto {
         this.gameDate = null;
         this.gameTime = null;
 
-        this.userNick = party.getUser().getUNickname();
+        this.userNick = party.getUser().getNickname();
         //여기도 매핑 이후 구현
         this.stadiumName = null;
         this.state = party.getAccept() ? "수락": "미수락";
