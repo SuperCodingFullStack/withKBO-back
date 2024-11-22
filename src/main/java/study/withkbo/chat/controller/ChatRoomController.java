@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.*;
 import study.withkbo.chat.dto.request.ChatRoomRequestDto;
 import study.withkbo.chat.entity.ChatRoom;
 import study.withkbo.chat.service.ChatRoomService;
+import study.withkbo.common.response.ApiResponseDto;
+import study.withkbo.common.response.MessageType;
+import study.withkbo.exception.common.CommonError;
+import study.withkbo.exception.common.CommonException;
 
 import java.util.List;
 
@@ -19,24 +23,24 @@ public class ChatRoomController {
 
     // 채팅방 생성
     @PostMapping("/create")
-    public ResponseEntity<ChatRoom> createChatRoom(@RequestBody ChatRoomRequestDto chatRoomRequestDTO) {
-        ChatRoom request = chatRoomService.createChatRoom(chatRoomRequestDTO.getRoomName());
-        return ResponseEntity.status(HttpStatus.CREATED).body(request);
+    public ApiResponseDto<ChatRoom> createChatRoom(@RequestBody ChatRoomRequestDto chatRoomRequestDTO) {
+        ChatRoom chatRoom = chatRoomService.createChatRoom(chatRoomRequestDTO.getRoomName());
+        return ApiResponseDto.success(MessageType.CREATE, chatRoom);
     }
 
     // 채팅방 조회
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<ChatRoom>> getChatRoomByUserId(@PathVariable Long userId) {
+    public ApiResponseDto<List<ChatRoom>> getChatRoomByUserId(@PathVariable Long userId) {
         List<ChatRoom> chatRooms = chatRoomService.getChatRoomByUserId(userId);
-        return ResponseEntity.ok(chatRooms);
+        return ApiResponseDto.success(MessageType.RETRIEVE, chatRooms);
     }
     // 특정 채팅방 조회 (부분 문자열도 가능)
     @GetMapping("/room/{roomName}")
-    public ResponseEntity<List<ChatRoom>> getChatRoomByRoomName(@PathVariable String roomName) {
+    public ApiResponseDto<List<ChatRoom>> getChatRoomByRoomName(@PathVariable String roomName) {
         List<ChatRoom> rooms = chatRoomService.getChatRoomByRoomName(roomName);
         if (rooms.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            throw new CommonException(CommonError.NOT_FOUND);
         }
-        return ResponseEntity.ok(rooms);
+        return ApiResponseDto.success(MessageType.RETRIEVE, rooms);
     }
 }

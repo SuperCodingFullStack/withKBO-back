@@ -16,6 +16,5 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     List<ChatRoom> findAllByUserId(Long userId);
 
     // 문자열 부분 검색
-    @Query("SELECT cr FROM ChatRoom cr WHERE cr.roomName LIKE %:roomName%")
     List<ChatRoom> findChatRoomByRoomNameContaining(@Param("roomName") String roomName);
 }

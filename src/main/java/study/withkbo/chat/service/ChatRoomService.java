@@ -4,9 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import study.withkbo.chat.entity.ChatRoom;
 import study.withkbo.chat.repository.ChatRoomRepository;
+import study.withkbo.exception.common.CommonError;
+import study.withkbo.exception.common.CommonException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,11 +18,11 @@ public class ChatRoomService {
     // 채팅방 생성
     public ChatRoom createChatRoom(String roomName) {
         if (roomName == null || roomName.isEmpty()) {
-            throw new RuntimeException("채팅방 이름이 null이거나 없습니다.");
+            throw new CommonException(CommonError.FILE_NOT_FOUND);
         }
 
         if (chatRoomRepository.existsByRoomName(roomName)) {
-            throw new RuntimeException("동일한 채팅방 이름이 존재합니다.");
+            throw new CommonException(CommonError.CONFLICT);
         }
 
         ChatRoom chatRoom = new ChatRoom();
@@ -32,7 +33,7 @@ public class ChatRoomService {
     // 전체 채팅방 조회
     public List<ChatRoom> getChatRoomByUserId(Long userId) {
         if (userId == null) {
-            throw new RuntimeException("존재하지 않는 유저입니다.");
+            throw new CommonException(CommonError.INVALID_INPUT);
         }
         return chatRoomRepository.findAllByUserId(userId);
     }
