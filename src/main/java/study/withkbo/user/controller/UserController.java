@@ -1,6 +1,7 @@
 package study.withkbo.user.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import study.withkbo.common.response.ApiResponseDto;
@@ -34,10 +35,12 @@ public class UserController {
         return ApiResponseDto.success(MessageType.CREATE, result);
     }
 
+
+    //임시 테스트 코드
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     @GetMapping("/userList")
     public ApiResponseDto<List<UserResponseDto>>getUserList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user =userDetails.getUser();
-        System.out.println(user.toString());
         return null;
     }
 }

@@ -13,6 +13,7 @@ import study.withkbo.team.entity.Team;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of="id",callSuper = false)
+@ToString
 public class User extends BaseTime {
 
     @Id // 프라이머리 키 지정
