@@ -36,7 +36,13 @@ public enum CommonError {
     //친구 - 코드 접두사(F)
     FRIEND_REQUEST_ALREADY_SEND(HttpStatus.BAD_REQUEST,"F-001", "친구 신청을 이미 보낸 사용자입니다."),
     FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND, "F-002", "해당하는 친구가 없습니다."),
-    FRIEND_ALREADY_BLOCK(HttpStatus.BAD_REQUEST, "F-003","이미 차단한 사용자입니다.");
+    FRIEND_ALREADY_BLOCK(HttpStatus.BAD_REQUEST, "F-003","이미 차단한 사용자입니다."),
+
+    //유저(사용지) - 코드 접두사(U)
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U-001", "해당하는 사용자가 존재하지 않습니다."),
+    USER_ALREADY_EXIST_USERNAME(HttpStatus.BAD_REQUEST, "U-002","해당 아이디를 사용하는 유저가 이미 존재합니다."),
+    USER_ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "U-003","해당 이메일을 사용하는 유저가 이미 존재합니다."),
+    USER_LOGIN_FAILED(HttpStatus.BAD_REQUEST, "U-004", "로그인에 실패하셨습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

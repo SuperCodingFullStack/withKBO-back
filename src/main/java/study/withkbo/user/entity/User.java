@@ -3,12 +3,12 @@ package study.withkbo.user.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import study.withkbo.common.BaseTime;
+import study.withkbo.friend.entity.State;
 import study.withkbo.team.entity.Team;
 
 @Table(name = "t_user")
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,32 +23,38 @@ public class User extends BaseTime {
     @JoinColumn(name="team_id")
     private Team team;
 
-    @Column(nullable = false, length = 100, name="uEmail")
-    private String uEmail;
+    @Column(nullable = false, length = 50)
+    private String username;
+
+    @Column(nullable = false, length = 100)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
 
     @Column(nullable = false, length = 30)
-    private String uPwd;
-
-    @Column(nullable = false, length = 30)
-    private String uName;
+    private String name;
 
     @Column(nullable = true, length = 30)
-    private String uNickname;
+    private String nickname;
 
     @Column(nullable = false, length = 20)
-    private String uPhone;
+    private String phone;
 
+    @Column(nullable = false, length = 100)
+    private String address;
+
+    @Builder.Default
     @Column(nullable = false)
-    private Boolean uPhoneAuth;
+    @Enumerated(EnumType.STRING)
+    private UserRoleEnum role = UserRoleEnum.USER;
 
-    @Column(nullable = false, length = 30)
-    private String uAddress;
-
-    @Column(nullable = false)
-    private String uStatus;
+    @Builder.Default
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private Boolean isDeleted = false;
 
     @Column(nullable = false, length = 150)
-    private String ProfileImg;
+    private String profileImg;
 
 
 }

@@ -23,7 +23,7 @@ public class CommentResponseDto {
         return CommentResponseDto.builder()
                 .commentId(comment.getId())
                 .userId(comment.getUser().getId())
-                .userName(comment.getUser().getUNickname())
+                .userName(comment.getUser().getNickname())
                 .profileImage(comment.getUser().getProfileImg())
                 .content(comment.getContent())
                 .createAt(comment.getCreatedDate().toString())

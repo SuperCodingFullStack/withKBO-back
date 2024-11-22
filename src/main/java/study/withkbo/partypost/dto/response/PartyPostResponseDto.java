@@ -53,7 +53,7 @@ public class PartyPostResponseDto {
     public static PartyPostResponseDto fromEntity(PartyPost partyPost) {
         return PartyPostResponseDto.builder()
                 .id(partyPost.getId())
-                .userNickname(partyPost.getUser().getUNickname()) // 작성자 닉네임
+                .userNickname(partyPost.getUser().getNickname()) // 작성자 닉네임
                 .userImg(partyPost.getUser().getProfileImg()) // 프로필 이미지
                 .title(partyPost.getTitle()) // 게시글 제목
                 .myTeamImg(partyPost.getGame().getTeam().getTeamName()) // 우리 팀 이미지 가져오기 위한 팀이름

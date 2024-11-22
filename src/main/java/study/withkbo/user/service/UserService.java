@@ -3,35 +3,54 @@ package study.withkbo.user.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import study.withkbo.user.dto.request.UserRequestDTO;
-import study.withkbo.user.dto.response.UserResponseDTO;
+import study.withkbo.exception.common.CommonError;
+import study.withkbo.exception.common.CommonException;
+import study.withkbo.security.JwtAuthenticationFilter;
+import study.withkbo.user.dto.request.UserLoginRequestDto;
+import study.withkbo.user.dto.request.UserSignUpRequestDto;
+import study.withkbo.user.dto.response.UserResponseDto;
 import study.withkbo.user.entity.User;
 import study.withkbo.user.repository.UserRepository;
-import study.withkbo.user.service.Mapper.UserMapper;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper userMapper;
 
-    @Transactional
-    public User signUp(UserRequestDTO userRequestDTO) {
-        User user = userMapper.INSTANCE.userBodyToUser(userRequestDTO);
-        user.setUPwd(passwordEncoder.encode(userRequestDTO.getPwd()));
-        user.setUStatus("Y");
+    public void login(UserLoginRequestDto requestDto) {
 
-        return userRepository.save(user);
+
     }
 
-    public List<UserResponseDTO> getUserList() {
-        List<User> userList = userRepository.findAll();
-        List<UserResponseDTO> userListDTO = userList.stream().map(UserMapper.INSTANCE::userEntityToUserDTO).collect(Collectors.toList());
-        return userListDTO;
+    public UserResponseDto signUp(UserSignUpRequestDto requestDto) {
+        String username = requestDto.getUsername();
+        String password = passwordEncoder.encode(requestDto.getPassword());
+
+
+        Optional<User> checkUsername = userRepository.findByUsername(username);
+        if (checkUsername.isPresent()) {
+            throw new CommonException(CommonError.USER_ALREADY_EXIST_USERNAME);
+        }
+
+        Optional<User> checkEmail = userRepository.findByEmail(requestDto.getEmail());
+        if (checkEmail.isPresent()) {
+            throw new CommonException(CommonError.USER_ALREADY_EXIST_EMAIL);
+        }
+
+
+        User user = userRepository.save(User.builder()
+                .username(username)
+                .email(requestDto.getEmail())
+                .password(password)
+                .name(requestDto.getName())
+                .nickname(requestDto.getNickname())
+                .phone(requestDto.getPhone())
+                .address(requestDto.getAddress())
+                .profileImg(requestDto.getProfileImg()).build());
+
+        return new UserResponseDto(user);
     }
 }

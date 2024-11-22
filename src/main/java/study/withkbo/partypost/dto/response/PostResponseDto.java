@@ -60,7 +60,7 @@ public class PostResponseDto {
     public static PostResponseDto fromEntity(PartyPost partyPost) {
         return PostResponseDto.builder()
                 .id(partyPost.getUser().getId())
-                .userNickname(partyPost.getUser().getUNickname()) // 작성자 닉네임
+                .userNickname(partyPost.getUser().getNickname()) // 작성자 닉네임
                 .userImg(partyPost.getUser().getProfileImg()) // 프로필 이미지
                 .title(partyPost.getTitle()) // 게시글 제목
                 .content(partyPost.getContent()) // 게시글 내용

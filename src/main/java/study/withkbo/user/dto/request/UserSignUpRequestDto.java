@@ -6,14 +6,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRequestDTO {
+public class UserSignUpRequestDto {
+
+
+    //id 역할이라고 보시면 됩니다
+    private String username;
 
     private String email;
 
-    private String pwd;
+    private String password;
 
     private String name;
 
@@ -21,10 +24,9 @@ public class UserRequestDTO {
 
     private String phone;
 
-    private boolean phoneAuth;
-
     private String address;
 
     private String profileImg;
+
 
 }
