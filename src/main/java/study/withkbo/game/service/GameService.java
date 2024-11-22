@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import study.withkbo.exception.common.CommonError;
 import study.withkbo.exception.common.CommonException;
 import study.withkbo.game.dto.response.GameInfoResponseDto;
+import study.withkbo.game.dto.response.GameResponseDto;
 import study.withkbo.game.entity.Game;
 import study.withkbo.game.repository.GameRepository;
 import study.withkbo.team.entity.Team;
@@ -48,10 +49,10 @@ public class GameService {
             throw new CommonException(CommonError.INTERNAL_SERVER_ERROR);
         }
 
-        gamesSearchMonth = gameRepository.findByMatchDate(month);
+        gamesSearchMonth = gameRepository.findByMatchDateStartingWith(month);
 
         if (gamesSearchMonth != null && !gamesSearchMonth.isEmpty()) {
-            return gameToDto(gamesSearchMonth);
+            return gamesSearchMonth.stream().map(GameInfoResponseDto::new).toList();
         } else {
             throw new CommonException(CommonError.GAME_NOT_FOUND);
         }
@@ -73,7 +74,7 @@ public class GameService {
     private List<Team> searchTeamNames(Elements gameInfo) {
         List<String> homeTeamNames = gameInfo.stream()
                 .map(gameInfoElement -> gameInfoElement.select("td.td_team div.info_team.team_home").text().split(" ")[0])
-                .collect(Collectors.toList());
+                .toList();
         return teamRepository.findByTeamNameIn(homeTeamNames);
     }
 
@@ -96,11 +97,8 @@ public class GameService {
             if (team != null && !isGameAlreadyExists(matchDate, homeTeamName, awayTeamName)) {
                 Game newGame = createNewGame(gameInfoElement, team);
                 newGames.add(newGame);
+                gameRepository.saveAll(newGames);
             }
-        }
-
-        if (!newGames.isEmpty()) {
-            gameRepository.saveAll(newGames);
         }
     }
 
@@ -117,28 +115,24 @@ public class GameService {
     }
 
     private boolean isGameAlreadyExists(String matchDate, String homeTeamName, String awayTeamName) {
-        return gameRepository.findByMatchDateAndHomeTeamAndAwayTeam(matchDate, homeTeamName, awayTeamName).isPresent();
+        return gameRepository.findByMatchDateAndTeam_TeamNameAndAwayTeam(matchDate, homeTeamName, awayTeamName).isPresent();
     }
 
     private Game createNewGame(Element gameInfoElement, Team team) {
         return new Game().crawledToGameEntity(gameInfoElement, team);
     }
 
-    private List<GameInfoResponseDto> gameToDto(List<Game> gamesSearchMonth) {
-        return gamesSearchMonth.stream().map(games -> GameInfoResponseDto.builder()
-                        .gameId(games.getId())
-                        .matchDate(games.getMatchDate())
-                        .matchTime(games.getMatchTime())
-                        .homeTeam(games.getTeam().getTeamName())
-                        .homeTeamScore(games.getHomeTeamScore())
-                        .homeTeamLogoImg(games.getTeam().getLogoImg())
-                        .awayTeam(games.getAwayTeam())
-                        .awayTeamScore(games.getAwayTeamScore())
-                        .awayTeamLogoImg(games.getAwayTeamLogoImg())
-                        .stadium(games.getTeam().getStadium())
-                        .gameSort(games.getGameSort())
-                        .tv(games.getTv())
-                        .build())
-                .toList();
+    public List<GameResponseDto> gameInfo(String matchDate) {
+        List<Game> games = (gameRepository.findByMatchDateStartingWith(gameMatchDateParser(matchDate)));
+
+        if (games.isEmpty()) {
+            throw new CommonException(CommonError.GAME_NOT_FOUND);
+        }
+        return games.stream().map(GameResponseDto::new).toList();
+    }
+
+    private String gameMatchDateParser(String matchDate){
+        String date = matchDate.substring(5);
+        return date.split("-")[0] + "." + date.split("-")[1];
     }
 }

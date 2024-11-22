@@ -33,7 +33,7 @@ public class TeamService {
         List<Team> existTeams = findByTeamName(teamNames);
         teamGroupToEntity(baseballTeams, existTeams);
 
-        return teamToDto(existTeams);
+        return existTeams.stream().map(TeamInfoResponseDto::new).toList();
     }
 
     private List<Team> findByTeamName(List<String> teamNames) {
@@ -65,7 +65,6 @@ public class TeamService {
         } catch (IOException e) {
             throw new CommonException(CommonError.CRAWLING_ERROR);
         }
-
         Elements baseballTeams = doc.select("#regularTeamRecordList_table > tr");
 
         if (baseballTeams.isEmpty()) {
@@ -80,7 +79,6 @@ public class TeamService {
             Team newTeam = new Team().crawledToTeamEntity(baseballTeam);
             processTeam(newTeam, existTeams);
         });
-
         saveTeams(existTeams);
     }
 
@@ -95,23 +93,4 @@ public class TeamService {
                 );
     }
 
-    public List<TeamInfoResponseDto> teamToDto(List<Team> existTeams) {
-        return existTeams.stream().map(team -> TeamInfoResponseDto.builder()
-                        .teamId(team.getId())
-                        .ranking(team.getRanking())
-                        .teamName(team.getTeamName())
-                        .gamesPlayed(team.getGamesPlayed())
-                        .win(team.getWin())
-                        .loss(team.getLoss())
-                        .draw(team.getDraw())
-                        .winRate(team.getWinRate())
-                        .consecutive(team.getConsecutive())
-                        .last10Games(team.getLast10Games())
-                        .stadium(team.getStadium())
-                        .latitude(team.getLatitude())
-                        .longitude(team.getLongitude())
-                        .logoImage(team.getLogoImg())
-                        .build())
-                .toList();
-    }
 }

@@ -22,7 +22,7 @@ public enum CommonError {
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "E-009", "입력값 검증에 실패했습니다."),
 
     //게임 - 코드 접두사(G)
-    GAME_NOT_FOUND(HttpStatus.BAD_REQUEST, "G-001","해당 월 경기 정보가 없습니다."),
+    GAME_NOT_FOUND(HttpStatus.BAD_REQUEST, "G-001","해당 경기 정보가 없습니다."),
     CRAWLING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "G-002","웹 크롤링 중 오류가 발생했습니다."),
 
     //팀 - 코드 접두사(T)

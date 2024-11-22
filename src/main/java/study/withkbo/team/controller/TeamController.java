@@ -2,10 +2,11 @@ package study.withkbo.team.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import study.withkbo.common.response.ApiResponseDto;
+import study.withkbo.common.response.MessageType;
 import study.withkbo.team.dto.response.TeamInfoResponseDto;
 import study.withkbo.team.service.TeamService;
 
@@ -21,7 +22,8 @@ public class TeamController {
     private final TeamService teamService;
 
     @GetMapping("/teamInfo")
-    public ResponseEntity<List<TeamInfoResponseDto>> mainPage() {
-        return ResponseEntity.ok(teamService.selectTeamInfo());
+    public ApiResponseDto<List<TeamInfoResponseDto>> mainPage() {
+        List<TeamInfoResponseDto> result = teamService.selectTeamInfo();
+        return ApiResponseDto.success(MessageType.RETRIEVE, result);
     }
 }
