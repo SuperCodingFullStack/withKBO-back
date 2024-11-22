@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import study.withkbo.partypost.entity.PartyPost;
 
-import java.util.List;
 
 @Getter
 @NoArgsConstructor

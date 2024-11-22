@@ -1,13 +1,11 @@
 package study.withkbo.partypost.service;
 
-import study.withkbo.partypost.dto.response.PartyPostPageResponseDto;
-import study.withkbo.partypost.dto.response.PartyPostResponseDto;
-import study.withkbo.partypost.dto.response.PostResponseDto;
-import study.withkbo.partypost.entity.PartyPost;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import study.withkbo.partypost.dto.request.PartyPostUpdateRequestDto;
+import study.withkbo.partypost.dto.request.PartyPostWriteRequestDto;
+import study.withkbo.partypost.dto.response.*;
 
-import java.util.Optional;
+
+
 
 public interface PartyPostService {
 
@@ -16,4 +14,13 @@ public interface PartyPostService {
     PartyPostPageResponseDto findPartyPostsWithPageable(int page, int size);
     // 특정 게시글 아이디로 가져오기
     PostResponseDto getPartyPostById(Long id);
+
+    // 게시글 작성
+    PartyPostWriteResponseDto createPost(PartyPostWriteRequestDto partyPostRequestDto, Long userId);
+
+    // 게시글 수정
+    PartyPostUpdateResponseDto updatePartyPost(Long id, Long userId, PartyPostUpdateRequestDto updateDto);
+
+    // 게시글 삭제
+    PartyPostDeleteResponseDto deletePartyPost(Long id, Long userId);
 }

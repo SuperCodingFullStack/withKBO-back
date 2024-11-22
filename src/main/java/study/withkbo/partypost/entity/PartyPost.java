@@ -5,13 +5,14 @@ import lombok.*;
 import study.withkbo.comment.entity.Comment;
 import study.withkbo.common.BaseTime;
 import study.withkbo.game.entity.Game;
+import study.withkbo.partypost.dto.request.PartyPostUpdateRequestDto;
 import study.withkbo.user.entity.User;
 
 import java.util.List;
 
 @Entity
 @Getter
-@Builder
+@Builder(toBuilder = true) // 기존 필드를 복사하여 빌더를 생성
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id", callSuper = false)
@@ -58,6 +59,25 @@ public class PartyPost  extends BaseTime {
     @Builder.Default
     private List<Comment> comments = List.of();;  // 해당 게시글에 달린 댓글들
 
+    // 필요에 따라 추가: 기존 필드 기반 빌더 생성 메서드
+    public PartyPost toBuilderWithUpdates(Game game, PartyPostUpdateRequestDto updateDto) {
+        return this.toBuilder()
+                .game(game)  // 새로운 경기 정보 설정
+                .title(updateDto.getTitle()) // 수정할 제목
+                .content(updateDto.getContent()) // 수정할 내용
+                .maxPeopleNum(updateDto.getMaxPeopleNum()) // 수정할 최대 모집 인원
+                .build();
+    }
+
+    // 조회수 계산
+    public int getHitCount() {
+        return this.Hit.size(); // PartyPostView에 기록된 유저 조회 수
+    }
+
+    // 좋아요 수 계산
+    public int getLikeCount() {
+        return this.Like.size(); // PartyPostLike에 기록된 유저 좋아요 수
+    }
 
     //혜정 코드
     public PartyPost(Long partyPostId) { this.id = partyPostId; }
