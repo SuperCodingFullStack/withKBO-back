@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import study.withkbo.game.entity.Game;
 
 @Getter
 @Builder
@@ -15,11 +16,22 @@ public class GameInfoResponseDto {
     private String matchTime;
     private String homeTeam;
     private String homeTeamScore;
-    private String homeTeamLogoImg;
     private String awayTeam;
     private String awayTeamScore;
-    private String awayTeamLogoImg;
     private String stadium;
     private String gameSort;
     private String tv;
+
+    public GameInfoResponseDto(Game game){
+        this.gameId = game.getId();
+        this.matchDate = game.getMatchDate();
+        this.matchTime = game.getMatchTime();
+        this.homeTeam = game.getTeam().getTeamName();
+        this.homeTeamScore = game.getHomeTeamScore();
+        this.awayTeam = game.getAwayTeam();
+        this.awayTeamScore = game.getAwayTeamScore();
+        this.stadium = game.getTeam().getStadium();
+        this.gameSort = game.getGameSort();
+        this.tv = game.getTv();
+    }
 }

@@ -1,12 +1,11 @@
 package study.withkbo.game.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import study.withkbo.common.response.ApiResponseDto;
+import study.withkbo.common.response.MessageType;
 import study.withkbo.game.dto.response.GameInfoResponseDto;
+import study.withkbo.game.dto.response.GameResponseDto;
 import study.withkbo.game.service.GameService;
 
 import java.util.List;
@@ -19,7 +18,14 @@ public class GameController {
     private final GameService gameService;
 
     @GetMapping("/gameInfo/{month}")
-    public ResponseEntity<List<GameInfoResponseDto>> gameInfo(@PathVariable String month){
-        return ResponseEntity.ok(gameService.selectGameInfo(month));
+    public ApiResponseDto<List<GameInfoResponseDto>> gameInfo(@PathVariable String month){
+        List<GameInfoResponseDto> result = gameService.selectGameInfo(month);
+        return ApiResponseDto.success(MessageType.RETRIEVE, result);
+    }
+
+    @GetMapping("/gameMatchDate")
+    public ApiResponseDto<List<GameResponseDto>> gameMatchDate(@RequestParam String matchDate){
+        List<GameResponseDto> result = gameService.gameInfo(matchDate);
+        return ApiResponseDto.success(MessageType.RETRIEVE, result);
     }
 }
