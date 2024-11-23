@@ -1,9 +1,11 @@
 package study.withkbo.friend.service;
 
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import study.withkbo.common.response.MessageType;
 import study.withkbo.exception.common.CommonError;
 import study.withkbo.exception.common.CommonException;
 import study.withkbo.friend.dto.request.FriendRequestDto;
@@ -11,29 +13,31 @@ import study.withkbo.friend.dto.response.FriendResponseDto;
 import study.withkbo.friend.entity.Friend;
 import study.withkbo.friend.entity.State;
 import study.withkbo.friend.repository.FriendRepository;
+import study.withkbo.jwt.JwtUtil;
 import study.withkbo.user.entity.User;
+import study.withkbo.user.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class FriendService {
 
     private final FriendRepository friendRepository;
+    
+    private final UserRepository userRepository;
 
-    public FriendResponseDto sendFriendRequest(FriendRequestDto requestDto, User user) {
-        friendRepository.findByFromUserIdAndToUserId(requestDto.getToUserId(), user.getId()).ifPresent(
-                (exist) ->  new CommonException(CommonError.FRIEND_REQUEST_ALREADY_SEND)
-        );
+    private final JwtUtil jwtUtil;
 
-        Friend sendRequest = friendRepository.save(Friend.builder()
-                .fromUserId(user.getId())
-                .toUserId(requestDto.getToUserId())
-                .state(State.SEND).build());
+    public User sendFriendRequest(FriendRequestDto friendRequestDto,User user) {
 
-        return new FriendResponseDto(sendRequest);
-    }
+        //Friend friend = friendRepository.findByFromUserIdAndToUserId(user.getId(),friendRequestDto.getToUserId())
+        //        .orElseThrow(()-> { throw new CommonException(CommonError.FRIEND_NOT_FOUND);});
+        //return new FriendResponseDto(friend);
+        return user;
+     }
 
     //페이징 나중에
     public List<FriendResponseDto> getFriendList(User user, String type) {
