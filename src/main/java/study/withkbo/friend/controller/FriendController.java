@@ -35,17 +35,14 @@ public class FriendController {
 
     @DeleteMapping("/friend")
     public ApiResponseDto<FriendResponseDto> blockFriend(@ModelAttribute FriendRequestDto requestDto, HttpServletRequest request){
-
         FriendResponseDto result = friendService.blockFriend(requestDto, request);
         return ApiResponseDto.success(MessageType.DELETE, result);
     }
 
-    @PutMapping()
-    public ApiResponseDto<FriendResponseDto> acceptFriendRequest(@RequestParam FriendRequestDto requestDto,User user,
-                                                 @RequestParam(name = "accept") String accept){
-
-        FriendResponseDto result = friendService.acceptFriendRequest(requestDto,user,accept);
-        return ApiResponseDto.success(MessageType.UPDATE, result);
+    @PutMapping("/friend")
+    public ApiResponseDto<FriendResponseDto> acceptFriendRequest(@ModelAttribute FriendRequestDto requestDto,HttpServletRequest request,@RequestParam(name="accept") String accept) {
+        FriendResponseDto friendResponseDto = friendService.acceptFriendRequest(requestDto,request,accept);
+        return ApiResponseDto.success(MessageType.UPDATE, friendResponseDto);
     }
 
 }

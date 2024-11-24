@@ -109,16 +109,24 @@ public class FriendService {
     }
 
     @Transactional
-    public FriendResponseDto acceptFriendRequest(FriendRequestDto requestDto , User user, String accept) {
-        Friend friend = checkFriend(requestDto, user);
+    public FriendResponseDto acceptFriendRequest(FriendRequestDto requestDto, HttpServletRequest request, String accept) {
+        String token = jwtUtil.getJwtFromHeader(request);
+        Claims userClaims = jwtUtil.getUserInfoFromToken(token);
+        String username = userClaims.getSubject();
 
-        if (!friend.getState().equals(State.SEND)){
+        User targetUser = userRepository.findByUsername(username).orElseThrow(
+                () -> { throw new CommonException(CommonError.USER_NOT_FOUND);}
+        );
+
+        Friend friend = checkFriend(requestDto,targetUser);
+
+        if(!friend.getState().equals(State.SEND)) {
             throw new CommonException(CommonError.BAD_REQUEST);
         }
 
-        if(accept.equals("true")){
+        if(accept.equals("true")) {
             friend.updateFriend(State.SECCESS);
-        }else {
+        } else {
             friend.updateFriend(State.REJECT);
         }
 
