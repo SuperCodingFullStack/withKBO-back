@@ -9,6 +9,7 @@ import study.withkbo.user.entity.User;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "t_hit") // 해당 이름 테이블로 매칭되게
 public class Hit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +23,9 @@ public class Hit {
     @JoinColumn(name = "party_post_id", nullable = false)
     private PartyPost partyPost; // 어떤 게시글을 조회했는가
 
-
+    public Hit(User user, PartyPost partyPost) {
+        this.user = user;
+        this.partyPost = partyPost;
+    }
 }
 

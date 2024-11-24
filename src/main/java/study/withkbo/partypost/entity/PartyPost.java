@@ -69,16 +69,22 @@ public class PartyPost  extends BaseTime {
                 .build();
     }
 
-    // 조회수 계산
-    public int getHitCount() {
-        return this.Hit.size(); // PartyPostView에 기록된 유저 조회 수
-    }
-
-    // 좋아요 수 계산
-    public int getLikeCount() {
-        return this.Like.size(); // PartyPostLike에 기록된 유저 좋아요 수
-    }
-
     //혜정 코드
     public PartyPost(Long partyPostId) { this.id = partyPostId; }
+
+    // 조회수/ 좋아요 관련 메소드들
+
+    // 좋아요 카운트 감소
+    public void decrementLikeCount() {
+        this.likeCount = Math.max(0, this.likeCount - 1);  // 좋아요 수가 0 미만으로 내려가지 않도록 방지
+    }
+    // 좋아요 카운트 증가
+    public void incrementLikeCount() {
+        this.likeCount += 1;  // 좋아요 수를 증가시킴
+    }
+
+    // 조회수 증가
+    public void incrementHitCount() {
+        this.hitCount ++; // 조회 수를 증가 시킴
+    }
 }

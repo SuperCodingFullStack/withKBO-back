@@ -1,9 +1,13 @@
 package study.withkbo.partypost.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class PartyPostUpdateRequestDto {
     private String title;         // 수정할 글 제목
