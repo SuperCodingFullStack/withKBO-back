@@ -27,16 +27,16 @@ public class FriendController {
        return ApiResponseDto.success(MessageType.SEND,friendResponseDto);
     }
 
-    @GetMapping()
-    public ApiResponseDto<List<FriendResponseDto>> getFriendList(User user, @RequestParam(name = "type") String type){
-        List<FriendResponseDto> result = friendService.getFriendList(user, type);
+    @GetMapping("/friend")
+    public ApiResponseDto<List<FriendResponseDto>> getFriendList(@RequestParam(name = "type") String type, HttpServletRequest request){
+        List<FriendResponseDto> result = friendService.getFriendList(type, request);
         return ApiResponseDto.success(MessageType.RETRIEVE, result);
     }
 
-    @DeleteMapping()
-    public ApiResponseDto<FriendResponseDto> blockFriend(@RequestParam FriendRequestDto requestDto,User user){
+    @DeleteMapping("/friend")
+    public ApiResponseDto<FriendResponseDto> blockFriend(@ModelAttribute FriendRequestDto requestDto, HttpServletRequest request){
 
-        FriendResponseDto result = friendService.blockFriend(requestDto, user);
+        FriendResponseDto result = friendService.blockFriend(requestDto, request);
         return ApiResponseDto.success(MessageType.DELETE, result);
     }
 
