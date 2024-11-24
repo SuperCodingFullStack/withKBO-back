@@ -1,5 +1,7 @@
 package study.withkbo.friend.service;
 
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,7 +13,9 @@ import study.withkbo.friend.dto.response.FriendResponseDto;
 import study.withkbo.friend.entity.Friend;
 import study.withkbo.friend.entity.State;
 import study.withkbo.friend.repository.FriendRepository;
+import study.withkbo.jwt.JwtUtil;
 import study.withkbo.user.entity.User;
+import study.withkbo.user.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,16 +25,30 @@ import java.util.List;
 public class FriendService {
 
     private final FriendRepository friendRepository;
+    private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
-    public FriendResponseDto sendFriendRequest(FriendRequestDto requestDto, User user) {
-        friendRepository.findByFromUserIdAndToUserId(requestDto.getToUserId(), user.getId()).ifPresent(
-                (exist) ->  new CommonException(CommonError.FRIEND_REQUEST_ALREADY_SEND)
+    public FriendResponseDto sendFriendRequest(FriendRequestDto requestDto, HttpServletRequest request) {
+        String token = jwtUtil.getJwtFromHeader(request);
+        Claims userClaims = jwtUtil.getUserInfoFromToken(token);
+        String username = userClaims.getSubject();
+
+        User requestUser = userRepository.findByUsername(username).orElseThrow(
+                () -> { throw new CommonException(CommonError.USER_NOT_FOUND); }
         );
 
-        Friend sendRequest = friendRepository.save(Friend.builder()
-                .fromUserId(user.getId())
-                .toUserId(requestDto.getToUserId())
-                .state(State.SEND).build());
+        friendRepository.findByFromUserIdAndToUserId(
+                requestDto.getToUserId(),
+                requestUser.getId()
+        ).ifPresent(
+                (exist) -> new CommonException(CommonError.FRIEND_REQUEST_ALREADY_SEND)
+        );
+
+        Friend sendRequest = friendRepository.save(
+                Friend.builder().fromUserId(requestUser.getId())
+                        .toUserId(requestDto.getToUserId())
+                        .state(State.SEND).build()
+        );
 
         return new FriendResponseDto(sendRequest);
     }
