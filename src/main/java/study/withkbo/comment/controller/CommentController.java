@@ -23,7 +23,7 @@ public class CommentController {
     private final CommentService commentService;
 
     // 댓글 조회 페이지네이션
-    @GetMapping("/{id}")
+    @GetMapping("/{postId}")
     public ApiResponseDto<CommentPageResponseDto> getCommentsByPostId(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,  // 기본 페이지는 0
@@ -38,22 +38,22 @@ public class CommentController {
     }
 
     // 댓글 생성
-    @PostMapping("/{id}")
-    public ApiResponseDto<CommentResponseDto> createComment(@PathVariable("id") Long id, @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    @PostMapping("/{postId}")
+    public ApiResponseDto<CommentResponseDto> createComment(@PathVariable("postId") Long postId, @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 토큰에서 유저만 뜯어서 가져오기
         User user =userDetails.getUser();
-         CommentResponseDto result = commentService.createComment(commentRequestDto,user,id);
+         CommentResponseDto result = commentService.createComment(commentRequestDto,user,postId);
         return ApiResponseDto.success(MessageType.CREATE, result);
     }
 
     // 댓글 삭제
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-    @DeleteMapping("/{id}")
-    public ApiResponseDto<Void> deleteComment(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    @DeleteMapping("/{postId}")
+    public ApiResponseDto<Void> deleteComment(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 토큰에서 유저만 뜯어서 가져오기
         User user =userDetails.getUser();
 
-         commentService.deleteComment(id, user);
+         commentService.deleteComment(postId, user);
         return ApiResponseDto.success(MessageType.DELETE);
     }
 }
