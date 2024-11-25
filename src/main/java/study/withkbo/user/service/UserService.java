@@ -1,5 +1,6 @@
 package study.withkbo.user.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -7,6 +8,7 @@ import study.withkbo.exception.common.CommonError;
 import study.withkbo.exception.common.CommonException;
 import study.withkbo.security.JwtAuthenticationFilter;
 import study.withkbo.user.dto.request.UserLoginRequestDto;
+import study.withkbo.user.dto.request.UserPasswordRequestDto;
 import study.withkbo.user.dto.request.UserSignUpRequestDto;
 import study.withkbo.user.dto.response.UserResponseDto;
 import study.withkbo.user.entity.User;
@@ -51,6 +53,20 @@ public class UserService {
                 .address(requestDto.getAddress())
                 .profileImg(requestDto.getProfileImg()).build());
 
+        return new UserResponseDto(user);
+    }
+
+    public void checkPassword(String inputPassword, String password) {
+        if(!passwordEncoder.matches(inputPassword, password)) {
+            throw new CommonException(CommonError.USER_PASSWORD_WRONG);
+        }
+    }
+
+    @Transactional
+    public UserResponseDto updatePassword(UserPasswordRequestDto requestDto, User user) {
+        checkPassword(requestDto.getCheckPassword(), user.getPassword());
+        user.updatePassword(passwordEncoder.encode(requestDto.getNewPassword()));
+        userRepository.save(user);
         return new UserResponseDto(user);
     }
 }
