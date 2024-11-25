@@ -39,7 +39,6 @@ public class CommentController {
 
     // 댓글 생성
     @PostMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ApiResponseDto<CommentResponseDto> createComment(@PathVariable("id") Long id, @RequestBody CommentRequestDto commentRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 토큰에서 유저만 뜯어서 가져오기
         User user =userDetails.getUser();
@@ -49,7 +48,7 @@ public class CommentController {
 
     // 댓글 삭제
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ApiResponseDto<Void> deleteComment(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 토큰에서 유저만 뜯어서 가져오기
         User user =userDetails.getUser();
