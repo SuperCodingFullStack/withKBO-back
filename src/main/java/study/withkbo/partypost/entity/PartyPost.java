@@ -43,13 +43,13 @@ public class PartyPost  extends BaseTime {
     @Column(nullable = false, name = "max_people_num")
     private Integer maxPeopleNum;  // 최대 인원
 
-    @Column(nullable = false, name = "current_people_num", columnDefinition = "INTEGER DEFAULT 1 CHECK(current_people_num >= 1)")
+    @Column(nullable = false, name = "current_people_num", columnDefinition = "INTEGER DEFAULT 1")
     private Integer currentPeopleNum;  // 현재 모집된 인원
 
-    @Column(nullable = false, name = "like_count", columnDefinition = "INTEGER DEFAULT 0 CHECK(like_count >= 0)")
+    @Column(nullable = false, name = "like_count", columnDefinition = "INTEGER DEFAULT 0")
     private Integer likeCount;  // 좋아요 개수 결국 이것도 해당글을 x명이 좋아합니다 표현해야함
 
-    @Column(nullable = false, name = "hit_count", columnDefinition = "INTEGER DEFAULT 0 CHECK(hit_count >= 0)")
+    @Column(nullable = false, name = "hit_count", columnDefinition = "INTEGER DEFAULT 0")
     private Integer hitCount;  // 조회수
 
     @Column(nullable = false, name = "post_state", columnDefinition = "BOOLEAN DEFAULT TRUE")

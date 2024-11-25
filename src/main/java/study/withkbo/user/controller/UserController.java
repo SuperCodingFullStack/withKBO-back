@@ -45,6 +45,7 @@ public class UserController {
         return null;
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_ADMIN')")
     @GetMapping("/password")
     public ApiResponseDto<?> checkPassword(@RequestBody String password, @AuthenticationPrincipal UserDetailsImpl userDetails){
         userService.checkPassword(password, userDetails.getPassword());
@@ -55,6 +56,12 @@ public class UserController {
     public ApiResponseDto<UserResponseDto> updatePassword(@Valid @RequestBody UserPasswordRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
         UserResponseDto result = userService.updatePassword(requestDto, userDetails.getUser());
         return ApiResponseDto.success(MessageType.UPDATE, result);
+    }
+
+    @GetMapping("/username")
+    public ApiResponseDto<String> checkUsername(@RequestParam String username){
+        userService.checkUsername(username);
+        return ApiResponseDto.success(MessageType.RETRIEVE, "아이디 중복 확인이 완료되었습니다. ");
     }
 
 

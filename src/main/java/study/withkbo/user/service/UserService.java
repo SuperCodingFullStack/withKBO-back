@@ -31,11 +31,7 @@ public class UserService {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
 
-
-        Optional<User> checkUsername = userRepository.findByUsername(username);
-        if (checkUsername.isPresent()) {
-            throw new CommonException(CommonError.USER_ALREADY_EXIST_USERNAME);
-        }
+        checkUsername(username);
 
         Optional<User> checkEmail = userRepository.findByEmail(requestDto.getEmail());
         if (checkEmail.isPresent()) {
@@ -68,5 +64,12 @@ public class UserService {
         user.updatePassword(passwordEncoder.encode(requestDto.getNewPassword()));
         userRepository.save(user);
         return new UserResponseDto(user);
+    }
+
+    public void checkUsername(String username) {
+        Optional<User> checkUsername = userRepository.findByUsername(username);
+        if (checkUsername.isPresent()) {
+            throw new CommonException(CommonError.USER_ALREADY_EXIST_USERNAME);
+        }
     }
 }
