@@ -1,5 +1,6 @@
 package study.withkbo.user.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -8,6 +9,7 @@ import study.withkbo.common.response.ApiResponseDto;
 import study.withkbo.common.response.MessageType;
 import study.withkbo.security.UserDetailsImpl;
 import study.withkbo.user.dto.request.UserLoginRequestDto;
+import study.withkbo.user.dto.request.UserPasswordRequestDto;
 import study.withkbo.user.dto.request.UserSignUpRequestDto;
 import study.withkbo.user.dto.response.UserResponseDto;
 import study.withkbo.user.entity.User;
@@ -29,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping("/signUp")
-    public ApiResponseDto<UserResponseDto> signUp(@RequestBody UserSignUpRequestDto requestDto) {
+    public ApiResponseDto<UserResponseDto> signUp(@Valid @RequestBody UserSignUpRequestDto requestDto) {
 
         UserResponseDto result = userService.signUp(requestDto);
         return ApiResponseDto.success(MessageType.CREATE, result);
@@ -37,10 +39,23 @@ public class UserController {
 
 
     //임시 테스트 코드
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     @GetMapping("/userList")
     public ApiResponseDto<List<UserResponseDto>>getUserList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user =userDetails.getUser();
         return null;
     }
+
+    @GetMapping("/password")
+    public ApiResponseDto<?> checkPassword(@RequestBody String password, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        userService.checkPassword(password, userDetails.getPassword());
+        return ApiResponseDto.success(MessageType.RETRIEVE, "비밀번호 확인이 완료 되었습니다.");
+    }
+
+    @PutMapping("/password")
+    public ApiResponseDto<UserResponseDto> updatePassword(@Valid @RequestBody UserPasswordRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        UserResponseDto result = userService.updatePassword(requestDto, userDetails.getUser());
+        return ApiResponseDto.success(MessageType.UPDATE, result);
+    }
+
+
 }

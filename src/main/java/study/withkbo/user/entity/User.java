@@ -36,7 +36,7 @@ public class User extends BaseTime {
     @Column(nullable = false, length = 30)
     private String name;
 
-    @Column(nullable = true, length = 30)
+    @Column( length = 30)
     private String nickname;
 
     @Column(nullable = false, length = 20)
@@ -58,5 +58,8 @@ public class User extends BaseTime {
     private String profileImg;
 
 
+    public void updatePassword(String encode) {
+        this.password = encode;
+    }
 }
 

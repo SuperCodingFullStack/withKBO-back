@@ -42,7 +42,8 @@ public enum CommonError {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U-001", "해당하는 사용자가 존재하지 않습니다."),
     USER_ALREADY_EXIST_USERNAME(HttpStatus.BAD_REQUEST, "U-002","해당 아이디를 사용하는 유저가 이미 존재합니다."),
     USER_ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "U-003","해당 이메일을 사용하는 유저가 이미 존재합니다."),
-    USER_LOGIN_FAILED(HttpStatus.BAD_REQUEST, "U-004", "로그인에 실패하셨습니다.");
+    USER_LOGIN_FAILED(HttpStatus.BAD_REQUEST, "U-004", "로그인에 실패하셨습니다."),
+    USER_PASSWORD_WRONG(HttpStatus.BAD_REQUEST, "U-005", "비밀번호가 일치하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
