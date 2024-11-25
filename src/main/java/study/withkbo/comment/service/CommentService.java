@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import study.withkbo.comment.dto.request.CommentDeleteRequestDto;
 import study.withkbo.comment.dto.request.CommentRequestDto;
 import study.withkbo.comment.dto.response.CommentPageResponseDto;
 import study.withkbo.comment.dto.response.CommentResponseDto;
@@ -17,6 +16,7 @@ import study.withkbo.exception.common.CommonException;
 import study.withkbo.partypost.entity.PartyPost;
 import study.withkbo.partypost.repository.PartyPostRepository;
 import study.withkbo.user.entity.User;
+import study.withkbo.user.entity.UserRoleEnum;
 import study.withkbo.user.repository.UserRepository;
 
 import java.util.List;
@@ -52,10 +52,9 @@ public class CommentService {
     }
 
     // 댓글 생성
-    public CommentResponseDto createComment(CommentRequestDto commentRequestDto) {
-        User user = userRepository.findById(commentRequestDto.getUserId())
-                .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
-        PartyPost partyPost = partyPostRepository.findById(commentRequestDto.getPostId())
+    public CommentResponseDto createComment(CommentRequestDto commentRequestDto, User user, Long postId) {
+
+        PartyPost partyPost = partyPostRepository.findById(postId)
                 .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
 
         Comment comment = Comment.builder()
@@ -70,25 +69,22 @@ public class CommentService {
     }
 
     // 댓글 삭제
-    public String deleteComment(CommentDeleteRequestDto deleteRequestDto) {
-        // 삭제 요청한 유저를 찾기
-        User user = userRepository.findById(deleteRequestDto.getUserId())
-                .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
+    public void deleteComment(Long id, User user) {
+
 
         // 삭제할 댓글을 찾기
-        Comment comment = commentRepository.findById(deleteRequestDto.getCommentId())
+        Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
 
         // 댓글의 작성자와 요청한 유저의 ID가 동일한지 확인
-        if (!comment.getUser().getId().equals(deleteRequestDto.getUserId())) {
-            // CommonException을 발생시켜 권한 오류 처리
-            throw new CommonException(CommonError.FORBIDDEN);  // 작성자와 일치하지 않으면 예외 발생
+        if (!(comment.getUser().getId().equals(user.getId()) || user.getRole().equals(UserRoleEnum.ADMIN))) {
+            // 작성자와 일치하지 않거나 관리자가 아니면 예외 발생
+            throw new CommonException(CommonError.FORBIDDEN);  // 권한 오류
         }
 
         // 댓글 삭제
         commentRepository.delete(comment);
 
-        return "댓글이 삭제되었습니다.";
     }
 
 }

@@ -2,21 +2,30 @@ package study.withkbo.like.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import study.withkbo.partypost.entity.PartyPost;
+import study.withkbo.user.entity.User;
 
 @Entity
 @Getter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "t_like")
+@AllArgsConstructor
+@Table(name = "t_like") // 해당 이름 테이블로 매칭되게
 public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;  // 댓글 고유 ID
+    private Long id;
 
-    @Column(nullable = false)
-    private Long userIdx;  // 외래키: User 테이블의 ID (작성자)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(nullable = false)
-    private Long partyPostId;  // 외래키: PartyPost 테이블의 ID (어떤 게시글의 좋아요인가)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "party_post_id", nullable = false)
+    private PartyPost partyPost;
+
+    public Like(User user, PartyPost partyPost) {
+        this.user = user;
+        this.partyPost = partyPost;
+    }
+
 }
