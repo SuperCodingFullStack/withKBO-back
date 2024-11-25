@@ -72,4 +72,11 @@ public class UserService {
             throw new CommonException(CommonError.USER_ALREADY_EXIST_USERNAME);
         }
     }
+
+    public void checkEmail(String email) {
+        Optional<User> checkEmail = userRepository.findByEmail(email);
+        if(checkEmail.isPresent()) {
+            throw new CommonException(CommonError.USER_ALREADY_EXIST_EMAIL);
+        }
+    }
 }

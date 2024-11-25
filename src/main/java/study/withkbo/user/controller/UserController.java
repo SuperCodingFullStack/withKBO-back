@@ -64,5 +64,11 @@ public class UserController {
         return ApiResponseDto.success(MessageType.RETRIEVE, "아이디 중복 확인이 완료되었습니다. ");
     }
 
+    @GetMapping("/email")
+    public ApiResponseDto<String> checkEmail(@RequestParam String email) {
+        userService.checkEmail(email);
+        return ApiResponseDto.success(MessageType.RETRIEVE,"이메일 중복 확인 완료");
+    }
+
 
 }

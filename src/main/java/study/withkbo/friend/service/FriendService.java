@@ -28,26 +28,18 @@ public class FriendService {
 
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
-    private final JwtUtil jwtUtil;
 
-    public FriendResponseDto sendFriendRequest(FriendRequestDto requestDto, HttpServletRequest request) {
-        String token = jwtUtil.getJwtFromHeader(request);
-        Claims userClaims = jwtUtil.getUserInfoFromToken(token);
-        String username = userClaims.getSubject();
-
-        User requestUser = userRepository.findByUsername(username).orElseThrow(
-                () -> { throw new CommonException(CommonError.USER_NOT_FOUND); }
-        );
+    public FriendResponseDto sendFriendRequest(FriendRequestDto requestDto) {
 
         friendRepository.findByFromUserIdAndToUserId(
                 requestDto.getToUserId(),
-                requestUser.getId()
+                requestDto.getUserId()
         ).ifPresent(
                 (exist) -> new CommonException(CommonError.FRIEND_REQUEST_ALREADY_SEND)
         );
 
         Friend sendRequest = friendRepository.save(
-                Friend.builder().fromUserId(requestUser.getId())
+                Friend.builder().fromUserId(requestDto.getUserId())
                         .toUserId(requestDto.getToUserId())
                         .state(State.SEND).build()
         );
@@ -56,16 +48,12 @@ public class FriendService {
     }
 
     //페이징 나중에
-    public List<FriendResponseDto> getFriendList(String type, HttpServletRequest request) {
-        String token = jwtUtil.getJwtFromHeader(request);
-        Claims userClaims = jwtUtil.getUserInfoFromToken(token);
-        String username = userClaims.getSubject();
+    public List<FriendResponseDto> getFriendList(String type, String username) {
+        List<Friend> friendList = new ArrayList<>();
 
         User targetUser = userRepository.findByUsername(username).orElseThrow(
-                () -> { throw new CommonException(CommonError.USER_NOT_FOUND);}
+                ()->{ throw new CommonException(CommonError.USER_NOT_FOUND);}
         );
-
-        List<Friend> friendList = new ArrayList<>();
 
         switch(type) {
             case "SEND":
@@ -89,14 +77,11 @@ public class FriendService {
     }
 
     @Transactional
-    public FriendResponseDto blockFriend(FriendRequestDto requestDto,HttpServletRequest request) {
-        String token = jwtUtil.getJwtFromHeader(request);
-        Claims userClaims = jwtUtil.getUserInfoFromToken(token);
-        String username = userClaims.getSubject();
-
-        User targetUser = userRepository.findByUsername(username).orElseThrow(
+    public FriendResponseDto blockFriend(FriendRequestDto requestDto) {
+        User targetUser = userRepository.findById(requestDto.getUserId()).orElseThrow(
                 () -> { throw new CommonException(CommonError.USER_NOT_FOUND);}
         );
+
         Friend targetFriend = checkFriend(requestDto,targetUser);
 
         if(targetFriend.getState().equals(State.BLOCK)) {
@@ -109,12 +94,8 @@ public class FriendService {
     }
 
     @Transactional
-    public FriendResponseDto acceptFriendRequest(FriendRequestDto requestDto, HttpServletRequest request, String accept) {
-        String token = jwtUtil.getJwtFromHeader(request);
-        Claims userClaims = jwtUtil.getUserInfoFromToken(token);
-        String username = userClaims.getSubject();
-
-        User targetUser = userRepository.findByUsername(username).orElseThrow(
+    public FriendResponseDto acceptFriendRequest(FriendRequestDto requestDto, String accept) {
+        User targetUser = userRepository.findById(requestDto.getUserId()).orElseThrow(
                 () -> { throw new CommonException(CommonError.USER_NOT_FOUND);}
         );
 
