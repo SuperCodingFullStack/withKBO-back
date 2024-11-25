@@ -5,6 +5,8 @@ import study.withkbo.partypost.dto.request.PartyPostWriteRequestDto;
 import study.withkbo.partypost.dto.response.*;
 import study.withkbo.user.entity.User;
 
+import java.util.List;
+
 
 public interface PartyPostService {
 
@@ -24,5 +26,6 @@ public interface PartyPostService {
     // 게시글 삭제
     PartyPostDeleteResponseDto deletePartyPost(Long id, User user);
 
-
+    // 경민님 특정 마이페이지 글 조회
+    List<PartyPostMyPageResponseDto> findMyPostsByType(String type, User user);
 }

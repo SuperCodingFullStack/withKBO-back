@@ -122,6 +122,7 @@ public class GameService {
         return new Game().crawledToGameEntity(gameInfoElement, team);
     }
 
+    @Transactional(readOnly = true)
     public List<GameResponseDto> gameInfo(String matchDate) {
         List<Game> games = (gameRepository.findByMatchDateStartingWith(gameMatchDateParser(matchDate)));
 

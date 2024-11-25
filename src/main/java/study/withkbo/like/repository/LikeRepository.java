@@ -5,6 +5,8 @@ import study.withkbo.like.entity.Like;
 import study.withkbo.partypost.entity.PartyPost;
 import study.withkbo.user.entity.User;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -15,4 +17,7 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
 
     // 특정 유저와 게시글에 대한 좋아요를 찾기
     Optional<Like> findByUserAndPartyPost(User user, PartyPost partyPost);
+
+    // 어떤 유저가 누른 좋아요들을 찾기
+    List<Like> findByUser(User user);
 }
