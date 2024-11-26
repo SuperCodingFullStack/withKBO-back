@@ -33,17 +33,9 @@ public class UserService {
 
         checkUsername(username);
 
-        Optional<User> checkEmail = userRepository.findByEmail(requestDto.getEmail());
-        if (checkEmail.isPresent()) {
-            throw new CommonException(CommonError.USER_ALREADY_EXIST_EMAIL);
-        }
-
-
         User user = userRepository.save(User.builder()
                 .username(username)
-                .email(requestDto.getEmail())
                 .password(password)
-                .name(requestDto.getName())
                 .nickname(requestDto.getNickname())
                 .phone(requestDto.getPhone())
                 .address(requestDto.getAddress())
@@ -71,5 +63,9 @@ public class UserService {
         if (checkUsername.isPresent()) {
             throw new CommonException(CommonError.USER_ALREADY_EXIST_USERNAME);
         }
+    }
+
+    public void withdraw(String password, User user) {
+        checkPassword(password, user.getPassword());
     }
 }

@@ -1,5 +1,8 @@
 package study.withkbo.user.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -7,14 +10,18 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import study.withkbo.common.response.ApiResponseDto;
 import study.withkbo.common.response.MessageType;
+import study.withkbo.jwt.JwtUtil;
 import study.withkbo.security.UserDetailsImpl;
 import study.withkbo.user.dto.request.UserLoginRequestDto;
 import study.withkbo.user.dto.request.UserPasswordRequestDto;
 import study.withkbo.user.dto.request.UserSignUpRequestDto;
 import study.withkbo.user.dto.response.UserResponseDto;
 import study.withkbo.user.entity.User;
+import study.withkbo.user.service.KakaoService;
 import study.withkbo.user.service.UserService;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 @RestController
@@ -23,6 +30,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final KakaoService kakaoService;
 
 
     //없어도 되는 메소드지만 스웨거 상 사용하려고 만들어놨습니다.
@@ -63,6 +71,22 @@ public class UserController {
         userService.checkUsername(username);
         return ApiResponseDto.success(MessageType.RETRIEVE, "아이디 중복 확인이 완료되었습니다. ");
     }
+
+    @GetMapping("/kakao/callback")
+    public ApiResponseDto<String> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException, UnsupportedEncodingException {
+        String encodedToken = URLEncoder.encode(kakaoService.kakaoLogin(code),"utf-8").replaceAll("\\+", "%20");
+        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, encodedToken);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        return ApiResponseDto.success(MessageType.RETRIEVE,"카카오 로그인이 완료되었습니다");
+    }
+
+    @DeleteMapping("")
+    public ApiResponseDto<String> withdraw(@RequestBody String password,@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.withdraw(password,userDetails.getUser());
+        return ApiResponseDto.success(MessageType.DELETE, "회원 탈퇴가 완료되었습니다.");
+    }
+
 
 
 }
