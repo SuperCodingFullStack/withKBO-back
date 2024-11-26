@@ -1,15 +1,19 @@
 package study.withkbo.party.service;
 
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import study.withkbo.exception.common.CommonError;
 import study.withkbo.exception.common.CommonException;
+import study.withkbo.jwt.JwtUtil;
 import study.withkbo.party.dto.response.PartyCreateResponseDto;
 import study.withkbo.party.dto.response.PartyListResponseDto;
 import study.withkbo.party.entity.Party;
 import study.withkbo.party.repository.PartyRepository;
 import study.withkbo.user.entity.User;
+import study.withkbo.user.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,14 +23,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PartyService {
     private final PartyRepository partyRepository;
+    private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
-    public PartyCreateResponseDto createParty(Long partyPostId, User user) {
-
-        if(partyRepository.findByPartyPostIdAndUser(partyPostId, user).isPresent()){
-            throw new CommonException(CommonError.PARTY_REQUEST_AlREADY_SEND);
-        }
-        Party party = partyRepository.save(new Party(partyPostId, user));
-        return new PartyCreateResponseDto(party);
+    public void createParty(Long partyPostId, HttpServletRequest request) {
     }
 
     public List<PartyListResponseDto> getPartyList(User user) {
@@ -39,18 +39,7 @@ public class PartyService {
         return partyList.stream().map(PartyListResponseDto::new).toList();
     }
 
-    public void deleteParty(Long partyId, User user) {
-
-        Party party = partyRepository.findById(partyId).orElseThrow(
-                () -> new CommonException(CommonError.PARTY_NOT_FOUND)
-        );
-
-        if(party.getUser().getId() != user.getId()){
-            throw new CommonException(CommonError.FORBIDDEN);
-        }
-
-        partyRepository.deleteById(partyId);
-
+    public void deleteParty(Long partyId) {
     }
 
 }

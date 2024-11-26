@@ -65,6 +65,7 @@ public class UserService {
         }
     }
 
+
     public void withdraw(String password, User user) {
         checkPassword(password, user.getPassword());
     }
