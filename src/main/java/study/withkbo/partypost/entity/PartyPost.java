@@ -43,8 +43,9 @@ public class PartyPost  extends BaseTime {
     @Column(nullable = false, name = "max_people_num")
     private Integer maxPeopleNum;  // 최대 인원
 
-    @Column(nullable = false, name = "current_people_num", columnDefinition = "INTEGER DEFAULT 1 CHECK(current_people_num >= 1)")
-    private Integer currentPeopleNum;  // 현재 모집된 인원
+    @Column(nullable = false, name = "current_people_num")
+    @Min(1)  // currentPeopleNum은 최소 1 이상이어야 함
+    private Integer currentPeopleNum = 1;  // 기본값을 1로 설정 (현재 모집된 인원)
 
     @Column(nullable = false, name = "like_count")
     private Integer likeCount = 0;  // 기본값을 0으로 설정  // 좋아요 개수 결국 이것도 해당글을 x명이 좋아합니다 표현해야함

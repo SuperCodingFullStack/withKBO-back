@@ -31,23 +31,11 @@ public class UserService {
         String username = requestDto.getUsername();
         String password = passwordEncoder.encode(requestDto.getPassword());
 
-
-        Optional<User> checkUsername = userRepository.findByUsername(username);
-        if (checkUsername.isPresent()) {
-            throw new CommonException(CommonError.USER_ALREADY_EXIST_USERNAME);
-        }
-
-        Optional<User> checkEmail = userRepository.findByEmail(requestDto.getEmail());
-        if (checkEmail.isPresent()) {
-            throw new CommonException(CommonError.USER_ALREADY_EXIST_EMAIL);
-        }
-
+        checkUsername(username);
 
         User user = userRepository.save(User.builder()
                 .username(username)
-                .email(requestDto.getEmail())
                 .password(password)
-                .name(requestDto.getName())
                 .nickname(requestDto.getNickname())
                 .phone(requestDto.getPhone())
                 .address(requestDto.getAddress())
@@ -68,5 +56,16 @@ public class UserService {
         user.updatePassword(passwordEncoder.encode(requestDto.getNewPassword()));
         userRepository.save(user);
         return new UserResponseDto(user);
+    }
+
+    public void checkUsername(String username) {
+        Optional<User> checkUsername = userRepository.findByUsername(username);
+        if (checkUsername.isPresent()) {
+            throw new CommonException(CommonError.USER_ALREADY_EXIST_USERNAME);
+        }
+    }
+
+    public void withdraw(String password, User user) {
+        checkPassword(password, user.getPassword());
     }
 }
