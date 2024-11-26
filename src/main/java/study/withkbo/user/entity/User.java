@@ -24,25 +24,19 @@ public class User extends BaseTime {
     @JoinColumn(name="team_id")
     private Team team;
 
-    @Column(nullable = false, length = 50)
-    private String username;
-
     @Column(nullable = false, length = 100)
-    private String email;
+    private String username;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, length = 30)
-    private String name;
-
     @Column( length = 30)
     private String nickname;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String phone;
 
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String address;
 
     @Builder.Default
@@ -54,12 +48,27 @@ public class User extends BaseTime {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private Boolean isDeleted = false;
 
-    @Column(nullable = false, length = 150)
+    @Column(length = 150)
     private String profileImg;
 
+    private Long kakaoId;
+
+    public User(String nickname, String encodedPassword, String email, UserRoleEnum userRoleEnum, Long kakaoId) {
+        this.nickname = nickname;
+        this.password = encodedPassword;
+        this.role = userRoleEnum;
+        this.kakaoId = kakaoId;
+        this.username = email;
+        this.isDeleted = false;
+    }
 
     public void updatePassword(String encode) {
         this.password = encode;
+    }
+
+    public User kakaoIdUpdate(Long kakaoId) {
+        this.kakaoId = kakaoId;
+        return this;
     }
 }
 

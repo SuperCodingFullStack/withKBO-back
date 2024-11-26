@@ -20,6 +20,8 @@ import study.withkbo.user.entity.User;
 import study.withkbo.user.service.KakaoService;
 import study.withkbo.user.service.UserService;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 @RestController
@@ -71,13 +73,20 @@ public class UserController {
     }
 
     @GetMapping("/kakao/callback")
-    public ApiResponseDto<String> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
-        String token = kakaoService.kakaoLogin(code);
-        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, token);
+    public ApiResponseDto<String> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException, UnsupportedEncodingException {
+        String encodedToken = URLEncoder.encode(kakaoService.kakaoLogin(code),"utf-8").replaceAll("\\+", "%20");
+        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, encodedToken);
         cookie.setPath("/");
         response.addCookie(cookie);
         return ApiResponseDto.success(MessageType.RETRIEVE,"카카오 로그인이 완료되었습니다");
     }
+
+    @DeleteMapping("")
+    public ApiResponseDto<String> withdraw(@RequestBody String password,@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.withdraw(password,userDetails.getUser());
+        return ApiResponseDto.success(MessageType.DELETE, "회원 탈퇴가 완료되었습니다.");
+    }
+
 
 
 }
