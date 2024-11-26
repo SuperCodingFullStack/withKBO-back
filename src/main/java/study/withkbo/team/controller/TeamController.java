@@ -2,11 +2,13 @@ package study.withkbo.team.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import study.withkbo.common.response.ApiResponseDto;
 import study.withkbo.common.response.MessageType;
+import study.withkbo.security.UserDetailsImpl;
 import study.withkbo.team.dto.response.TeamInfoResponseDto;
 import study.withkbo.team.service.TeamService;
 
