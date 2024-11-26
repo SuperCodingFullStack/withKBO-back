@@ -7,6 +7,7 @@ import study.withkbo.user.entity.User;
 
 @Entity
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "t_chat_message")
