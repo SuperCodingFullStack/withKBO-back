@@ -7,7 +7,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import study.withkbo.partypost.entity.PartyPost;
+import study.withkbo.user.entity.User;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -20,4 +23,6 @@ public interface PartyPostRepository extends JpaRepository<PartyPost, Long> {
     // Specification을 사용하여 동적 쿼리와 페이징을 처리
     Page<PartyPost> findAll(Specification<PartyPost> spec, Pageable pageable);
 
+
+    List<PartyPost> findByUser(User user);
 }

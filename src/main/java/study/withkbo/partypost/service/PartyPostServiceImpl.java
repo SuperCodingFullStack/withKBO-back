@@ -11,6 +11,8 @@ import study.withkbo.exception.common.CommonError;
 import study.withkbo.exception.common.CommonException;
 import study.withkbo.game.entity.Game;
 import study.withkbo.game.repository.GameRepository;
+import study.withkbo.like.entity.Like;
+import study.withkbo.like.repository.LikeRepository;
 import study.withkbo.partypost.Specification.PartyPostSpecification;
 import study.withkbo.partypost.dto.request.PartyPostUpdateRequestDto;
 import study.withkbo.partypost.dto.request.PartyPostWriteRequestDto;
@@ -31,6 +33,7 @@ public class PartyPostServiceImpl implements PartyPostService {
 
     private final PartyPostRepository partyPostRepository;
     private final GameRepository gameRepository;
+    private final LikeRepository likeRepository;
 
 
     //    @Operation("게시글 아이디로 상세게시글 가져오기")
@@ -113,7 +116,7 @@ public class PartyPostServiceImpl implements PartyPostService {
                 .build();
     }
 
-
+   
 
 
     // 검색 조건에 따른 리스트 출력
@@ -167,5 +170,25 @@ public class PartyPostServiceImpl implements PartyPostService {
                 partyPostPage.getSize()
         );
     }
+
+    // 조건에 따라 자기가 작성한 글 또는 자기가 좋아요한 글들을 가져옴
+    @Override
+    public List<PartyPostMyPageResponseDto> findMyPostsByType(String type, User user) {
+
+        return  switch (type) {
+            case "written" -> // 작성한 게시글 조회
+                    partyPostRepository.findByUser(user).stream()
+                            .map(PartyPostMyPageResponseDto::fromEntity)
+                            .collect(Collectors.toList());
+            case "liked" -> // 좋아요한 게시글 조회
+                    likeRepository.findByUser(user).stream()
+                            .map(Like::getPartyPost) // 좋아요한 PartyPost 추출
+                            .map(PartyPostMyPageResponseDto::fromEntity)
+                            .collect(Collectors.toList());
+            default -> // 예외 처리
+                    throw new CommonException(CommonError.BAD_REQUEST);
+        };
+    }
+
 }
 

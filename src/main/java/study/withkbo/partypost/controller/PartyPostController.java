@@ -1,5 +1,6 @@
 package study.withkbo.partypost.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,6 +17,8 @@ import study.withkbo.partypost.dto.response.*;
 import study.withkbo.partypost.service.PartyPostService;
 import study.withkbo.security.UserDetailsImpl;
 import study.withkbo.user.entity.User;
+
+import java.util.List;
 
 
 @RestController
@@ -61,7 +64,7 @@ public class PartyPostController {
     //게시글을 작성하는 것
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping("")
-    public ApiResponseDto<PartyPostWriteResponseDto> createPost(@RequestBody PartyPostWriteRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ApiResponseDto<PartyPostWriteResponseDto> createPost( @RequestBody PartyPostWriteRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         // 토큰에서 유저만 뜯어서 가져오기
         User user =userDetails.getUser();
@@ -96,6 +99,18 @@ public class PartyPostController {
         PartyPostDeleteResponseDto result= partyPostService.deletePartyPost(id, user);
 
         return ApiResponseDto.success(MessageType.DELETE, result);
+    }
+
+    // 마이페이지에서의 특정 조건 리스트 반환
+    @GetMapping("/myList/{type}")
+    public ApiResponseDto<List<PartyPostMyPageResponseDto>> getMyList(@PathVariable("type") String type, @AuthenticationPrincipal UserDetailsImpl userDetails ) {
+        // 토큰에서 유저만 뜯어서 가져오기
+        User user =userDetails.getUser();
+
+        //글을 조회해오는 작업
+        List<PartyPostMyPageResponseDto> result = partyPostService.findMyPostsByType(type, user);
+
+        return ApiResponseDto.success(MessageType.RETRIEVE, result);
     }
 
 }
