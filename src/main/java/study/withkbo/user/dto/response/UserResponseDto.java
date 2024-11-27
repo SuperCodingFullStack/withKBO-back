@@ -9,9 +9,7 @@ import java.time.LocalDateTime;
 public class UserResponseDto {
     private Long id;
     private String username;
-    private String name;
     private String nickname;
-    private String email;
     private String phone;
     private String profileImg;
     private String address;

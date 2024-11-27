@@ -22,7 +22,7 @@ public class NotifyDto {
             return Response.builder()
                     .content(notify.getContent())
                     .id(notify.getId().toString())
-                    .sender(notify.getSender().getName())
+                    .sender(notify.getSender().getNickname())
                     .readStatus(String.valueOf(notify.getReadStatus()))
                     .createdAt(notify.getCreatedDate().toString())
                     .build();

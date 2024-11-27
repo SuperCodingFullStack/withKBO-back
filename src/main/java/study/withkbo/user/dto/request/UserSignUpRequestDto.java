@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import study.withkbo.team.entity.Team;
 
 
 @Getter
@@ -46,5 +47,7 @@ public class UserSignUpRequestDto {
 
     @NotBlank(message = "프로필 이미지는 필수 항목입니다.")
     private String profileImg;
+
+    private Team team;
 }
 

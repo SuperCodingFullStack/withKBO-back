@@ -5,6 +5,7 @@ import lombok.*;
 import study.withkbo.common.BaseTime;
 import study.withkbo.friend.entity.State;
 import study.withkbo.team.entity.Team;
+import study.withkbo.user.dto.request.UserUpdateRequestDto;
 
 @Table(name = "t_user")
 @Entity
@@ -68,6 +69,19 @@ public class User extends BaseTime {
 
     public User kakaoIdUpdate(Long kakaoId) {
         this.kakaoId = kakaoId;
+        return this;
+    }
+
+    public void withdraw() {
+        this.isDeleted = true;
+    }
+
+    public User updateUser(UserUpdateRequestDto requestDto) {
+        this.nickname = requestDto.getNickname();
+        this.address = requestDto.getAddress();
+        this.team = requestDto.getTeam();
+        this.profileImg = requestDto.getProfileImg();
+        this.phone = requestDto.getPhone();
         return this;
     }
 }

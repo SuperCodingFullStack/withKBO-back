@@ -6,10 +6,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import study.withkbo.exception.common.CommonError;
 import study.withkbo.exception.common.CommonException;
-import study.withkbo.security.JwtAuthenticationFilter;
 import study.withkbo.user.dto.request.UserLoginRequestDto;
 import study.withkbo.user.dto.request.UserPasswordRequestDto;
 import study.withkbo.user.dto.request.UserSignUpRequestDto;
+import study.withkbo.user.dto.request.UserUpdateRequestDto;
 import study.withkbo.user.dto.response.UserResponseDto;
 import study.withkbo.user.entity.User;
 import study.withkbo.user.repository.UserRepository;
@@ -22,10 +22,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void login(UserLoginRequestDto requestDto) {
 
-
-    }
 
     public UserResponseDto signUp(UserSignUpRequestDto requestDto) {
         String username = requestDto.getUsername();
@@ -39,7 +36,8 @@ public class UserService {
                 .nickname(requestDto.getNickname())
                 .phone(requestDto.getPhone())
                 .address(requestDto.getAddress())
-                .profileImg(requestDto.getProfileImg()).build());
+                .profileImg(requestDto.getProfileImg())
+                .team(requestDto.getTeam()).build());
 
         return new UserResponseDto(user);
     }
@@ -59,13 +57,19 @@ public class UserService {
     }
 
     public void checkUsername(String username) {
-        Optional<User> checkUsername = userRepository.findByUsername(username);
+        Optional<User> checkUsername = userRepository.findByUsernameAndIsDeletedFalse(username);
         if (checkUsername.isPresent()) {
             throw new CommonException(CommonError.USER_ALREADY_EXIST_USERNAME);
         }
     }
 
-    public void withdraw(String password, User user) {
-        checkPassword(password, user.getPassword());
+    public void withdraw(User user) {
+        user.withdraw();
+        userRepository.save(user);
+    }
+
+    public UserResponseDto updateUserInfo(UserUpdateRequestDto requestDto, User user) {
+        user.updateUser(requestDto);
+        return new UserResponseDto(userRepository.save(user));
     }
 }
