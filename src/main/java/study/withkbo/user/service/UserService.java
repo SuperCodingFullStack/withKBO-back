@@ -65,6 +65,13 @@ public class UserService {
         }
     }
 
+    public void checkNickname(String nickname) {
+        Optional<User> checkNickname = userRepository.findByNickname(nickname);
+        if(checkNickname.isPresent()) {
+            throw new CommonException(CommonError.USER_ALREADY_EXIST_USERNAME);
+        }
+    }
+
 
     public void withdraw(String password, User user) {
         checkPassword(password, user.getPassword());

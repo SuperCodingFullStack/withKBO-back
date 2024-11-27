@@ -87,5 +87,11 @@ public class UserController {
         return ApiResponseDto.success(MessageType.DELETE, "회원 탈퇴가 완료되었습니다.");
     }
 
+    @GetMapping("/nickname")
+    public ApiResponseDto<String> checkNickname(@RequestParam String nickname) {
+        userService.checkNickname(nickname);
+        return ApiResponseDto.success(MessageType.RETRIEVE, "닉네임 중복 확인이 완료되었습니다");
+    }
+
 
 }
