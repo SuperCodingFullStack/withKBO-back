@@ -94,6 +94,10 @@ public class UserController {
         return ApiResponseDto.success(MessageType.UPDATE,result);
     }
 
-
+    @GetMapping("/nickname")
+    public ApiResponseDto<String> checkNickname(@RequestParam String nickname) {
+        userService.checkNickname(nickname);
+        return ApiResponseDto.success(MessageType.RETRIEVE, "닉네임 중복 확인이 완료되었습니다");
+    }
 
 }

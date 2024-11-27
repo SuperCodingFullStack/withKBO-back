@@ -67,6 +67,13 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void checkNickname(String nickname) {
+        Optional<User> checkNickname = userRepository.findByNickname(nickname);
+        if(checkNickname.isPresent()) {
+            throw new CommonException(CommonError.USER_ALREADY_EXIST_USERNAME);
+        }
+    }
+
     public UserResponseDto updateUserInfo(UserUpdateRequestDto requestDto, User user) {
         user.updateUser(requestDto);
         return new UserResponseDto(userRepository.save(user));
