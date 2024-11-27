@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import study.withkbo.jwt.JwtUtil;
 import study.withkbo.user.dto.request.UserLoginRequestDto;
 import study.withkbo.user.entity.UserRoleEnum;
@@ -50,6 +51,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
 
         String token = jwtUtil.createToken(username, role);
+        log.info("token: {}", token);
+        log.info("jwtUtil.AUTHORIZATION_HEADER: {}", JwtUtil.AUTHORIZATION_HEADER);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
     }
 

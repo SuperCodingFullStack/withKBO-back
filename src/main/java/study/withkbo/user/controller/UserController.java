@@ -11,15 +11,19 @@ import org.springframework.web.bind.annotation.*;
 import study.withkbo.common.response.ApiResponseDto;
 import study.withkbo.common.response.MessageType;
 import study.withkbo.jwt.JwtUtil;
+import study.withkbo.security.JwtAuthenticationFilter;
 import study.withkbo.security.UserDetailsImpl;
 import study.withkbo.user.dto.request.UserLoginRequestDto;
 import study.withkbo.user.dto.request.UserPasswordRequestDto;
 import study.withkbo.user.dto.request.UserSignUpRequestDto;
 import study.withkbo.user.dto.response.UserResponseDto;
+import study.withkbo.user.entity.User;
 import study.withkbo.user.service.KakaoService;
 import study.withkbo.user.service.UserService;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
 
 
 @RestController
@@ -45,11 +49,11 @@ public class UserController {
 
 
     //임시 테스트 코드
-//    @GetMapping("/userList")
-//    public ApiResponseDto<List<UserResponseDto>>getUserList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        User user =userDetails.getUser();
-//        return null;
-//    }
+    @GetMapping("/userList")
+    public ApiResponseDto<List<UserResponseDto>>getUserList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user =userDetails.getUser();
+        return null;
+    }
 
     @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_ADMIN')")
     @GetMapping("/password")

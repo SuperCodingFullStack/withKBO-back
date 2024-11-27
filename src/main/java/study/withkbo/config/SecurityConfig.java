@@ -14,6 +14,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import study.withkbo.jwt.JwtUtil;
 import study.withkbo.security.JwtAuthenticationFilter;
 import study.withkbo.security.JwtAuthorizationFilter;
@@ -52,11 +55,27 @@ public class SecurityConfig {
     }
 
 
+    // **[CORS 설정 추가]**
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://localhost:5173"); // **프론트엔드 URL 허용**
+        configuration.addAllowedMethod("*"); // **모든 HTTP 메서드 허용**
+        configuration.addAllowedHeader("*"); // **모든 헤더 허용**
+        configuration.setAllowCredentials(true); // **인증 정보 허용**
+        configuration.addExposedHeader("Authorization"); // 응답 헤더 중 'Authorization'을 노출
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // **모든 엔드포인트에 적용**
+        return source;
+    }
+
 
     // HTTP 보안 설정
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable());  // CSRF 보호 비활성화 (API 사용 시 필요)
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource())) // **[CORS 설정 활성화]**
+            .csrf(csrf -> csrf.disable());  // CSRF 보호 비활성화 (API 사용 시 필요)
 
         http.sessionManagement((sessionManagement) ->
             sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -65,7 +84,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests)->
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/", "/api/user/login", "api/user/signUp", "/swagger-ui/**","/swagger-resources/**",
+                        .requestMatchers("/", "/api/user/login", "api/login", "api/user/signUp", "/swagger-ui/**","/swagger-resources/**",
                                 "/v3/api-docs/**").permitAll() //메인, 로그인 , 회원가입 페이지 접근 허용
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                         .anyRequest().authenticated()

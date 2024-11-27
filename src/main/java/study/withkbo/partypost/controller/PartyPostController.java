@@ -1,5 +1,6 @@
 package study.withkbo.partypost.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,7 +64,7 @@ public class PartyPostController {
     //게시글을 작성하는 것
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping("")
-    public ApiResponseDto<PartyPostWriteResponseDto> createPost(@RequestBody PartyPostWriteRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ApiResponseDto<PartyPostWriteResponseDto> createPost( @RequestBody PartyPostWriteRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         // 토큰에서 유저만 뜯어서 가져오기
         User user =userDetails.getUser();

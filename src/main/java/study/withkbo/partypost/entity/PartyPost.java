@@ -44,7 +44,6 @@ public class PartyPost  extends BaseTime {
     private Integer maxPeopleNum;  // 최대 인원
 
     @Column(nullable = false, name = "current_people_num")
-    @Min(1)  // currentPeopleNum은 최소 1 이상이어야 함
     private Integer currentPeopleNum = 1;  // 기본값을 1로 설정 (현재 모집된 인원)
 
     @Column(nullable = false, name = "like_count")
