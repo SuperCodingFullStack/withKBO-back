@@ -17,7 +17,8 @@ import study.withkbo.team.entity.Team;
 @Table(name = "t_game")
 public class Game {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,20 +34,31 @@ public class Game {
     private String gameSort;
     private String tv;
 
-    public Game crawledToGameEntity(Element gameInfoElement, Team team){
-        this.matchDate = gameInfoElement.select("td.td_date").text();
+    public Game crawledToGameEntity(Element gameInfoElement, Team team, String lastMatchDate) {
+        String newMatchDate = gameInfoElement.select("td.td_date").text();
+
+        if (newMatchDate.isEmpty()) {
+            newMatchDate = lastMatchDate;
+        } else {
+            lastMatchDate = newMatchDate;
+        }
+
+        String homeTeamScore = gameInfoElement.select("td.td_team div.info_team.team_home").text().split(" ")[1];
+        String awayTeamScore = gameInfoElement.select("td.td_team div.info_team.team_away").text().split(" ")[1];
+
+        this.matchDate = newMatchDate;
         this.matchTime = gameInfoElement.select("td.td_time").text();
         this.team = team;
         this.awayTeam = gameInfoElement.select("td.td_team div.info_team.team_away").text().split(" ")[0];
-        String homeTeamScore = gameInfoElement.select("td.td_team div.info_team.team_home").text().split(" ")[1];
-        String awayTeamScore = gameInfoElement.select("td.td_team div.info_team.team_away").text().split(" ")[1];
-        if(homeTeamScore != null && !homeTeamScore.isEmpty()){
+
+        if (homeTeamScore != null && !homeTeamScore.isEmpty()) {
             this.homeTeamScore = homeTeamScore;
             this.awayTeamScore = awayTeamScore;
-        } else{
+        } else {
             this.homeTeamScore = "";
             this.awayTeamScore = "";
         }
+
         this.gameSort = gameInfoElement.select("td.td_sort").text();
         this.tv = gameInfoElement.select("td.td_tv").text();
 

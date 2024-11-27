@@ -15,15 +15,18 @@ public class NotifyDto {
     public static class Response {
         String id;
         String sender;
+        String receiver;
         String content;
         String readStatus;
+        String notificationType;
         String createdAt;
         public static Response createResponse(Notification notify) {
             return Response.builder()
                     .content(notify.getContent())
                     .id(notify.getId().toString())
-                    .sender(notify.getSender().getName())
+                    .sender(notify.getSender().getUsername())
                     .readStatus(String.valueOf(notify.getReadStatus()))
+                    .notificationType(String.valueOf(notify.getNotificationType()))
                     .createdAt(notify.getCreatedDate().toString())
                     .build();
 
