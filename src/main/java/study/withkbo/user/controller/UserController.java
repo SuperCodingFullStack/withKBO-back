@@ -16,6 +16,7 @@ import study.withkbo.security.UserDetailsImpl;
 import study.withkbo.user.dto.request.UserLoginRequestDto;
 import study.withkbo.user.dto.request.UserPasswordRequestDto;
 import study.withkbo.user.dto.request.UserSignUpRequestDto;
+import study.withkbo.user.dto.request.UserUpdateRequestDto;
 import study.withkbo.user.dto.response.UserResponseDto;
 import study.withkbo.user.entity.User;
 import study.withkbo.user.service.KakaoService;
@@ -57,7 +58,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_ADMIN')")
     @GetMapping("/password")
-    public ApiResponseDto<?> checkPassword(@RequestBody String password, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ApiResponseDto<?> checkPassword( String password, @AuthenticationPrincipal UserDetailsImpl userDetails){
         userService.checkPassword(password, userDetails.getPassword());
         return ApiResponseDto.success(MessageType.RETRIEVE, "비밀번호 확인이 완료 되었습니다.");
     }
@@ -84,11 +85,21 @@ public class UserController {
     }
 
     @DeleteMapping("")
-    public ApiResponseDto<String> withdraw(@RequestBody String password,@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        userService.withdraw(password,userDetails.getUser());
+    public ApiResponseDto<String> withdraw(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.withdraw(userDetails.getUser());
         return ApiResponseDto.success(MessageType.DELETE, "회원 탈퇴가 완료되었습니다.");
     }
 
+    @PutMapping()
+    public ApiResponseDto<UserResponseDto> updateUserInfo(@RequestBody UserUpdateRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        UserResponseDto result = userService.updateUserInfo(requestDto, userDetails.getUser());
+        return ApiResponseDto.success(MessageType.UPDATE,result);
+    }
 
+    @GetMapping("/nickname")
+    public ApiResponseDto<String> checkNickname(@RequestParam String nickname) {
+        userService.checkNickname(nickname);
+        return ApiResponseDto.success(MessageType.RETRIEVE, "닉네임 중복 확인이 완료되었습니다");
+    }
 
 }

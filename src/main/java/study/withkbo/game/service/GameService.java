@@ -7,9 +7,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +25,7 @@ import study.withkbo.game.repository.GameRepository;
 import study.withkbo.team.entity.Team;
 import study.withkbo.team.repository.TeamRepository;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,7 +43,7 @@ public class GameService {
         List<Game> gamesSearchMonth;
 
         try {
-            Element doc = gameInfoCrawling();
+            Element doc = gameInfoCrawling(month);
             Elements gameInfo = doc.select("#scheduleList tr");
             List<Team> teams = searchTeamNames(gameInfo);
             Map<String, Team> teamMap = stringTeamToMap(teams);
@@ -52,14 +56,13 @@ public class GameService {
         gamesSearchMonth = gameRepository.findByMatchDateStartingWith(month);
 
         if (gamesSearchMonth != null && !gamesSearchMonth.isEmpty()) {
-            return gamesSearchMonth.stream().map(GameInfoResponseDto::new).toList();
+            return gamesSearchMonth.stream().map(GameInfoResponseDto::new).collect(Collectors.toList());
         } else {
             throw new CommonException(CommonError.GAME_NOT_FOUND);
         }
     }
 
-    @Scheduled(cron = "0 0 2 * * *")
-    public Document gameInfoCrawling() {
+    public Document gameInfoCrawling(String month) {
         if (driver == null) {
             WebDriverManager.chromedriver().setup();
             ChromeOptions options = new ChromeOptions();
@@ -67,14 +70,19 @@ public class GameService {
             driver = new ChromeDriver(options);
         }
 
-        driver.get("https://sports.daum.net/schedule/kbo");
+        String url = "https://sports.daum.net/schedule/kbo?date=2024" + month;
+        driver.get(url);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#scheduleList tr")));
+
         return Jsoup.parse(driver.getPageSource());
     }
 
     private List<Team> searchTeamNames(Elements gameInfo) {
         List<String> homeTeamNames = gameInfo.stream()
                 .map(gameInfoElement -> gameInfoElement.select("td.td_team div.info_team.team_home").text().split(" ")[0])
-                .toList();
+                .collect(Collectors.toList());
         return teamRepository.findByTeamNameIn(homeTeamNames);
     }
 
@@ -86,20 +94,27 @@ public class GameService {
     @Transactional
     public void gameInfoToEntity(Elements gameInfo, Map<String, Team> teamMap) {
         List<Game> newGames = new ArrayList<>();
+        String lastMatchDate = "";
 
         for (Element gameInfoElement : gameInfo) {
             String homeTeamName = getHomeTeamName(gameInfoElement);
             String matchDate = getMatchDate(gameInfoElement);
             String awayTeamName = getAwayTeamName(gameInfoElement);
 
+            if (matchDate.isEmpty()) {
+                matchDate = lastMatchDate;
+            } else {
+                lastMatchDate = matchDate;
+            }
+
             Team team = teamMap.get(homeTeamName);
 
             if (team != null && !isGameAlreadyExists(matchDate, homeTeamName, awayTeamName)) {
-                Game newGame = createNewGame(gameInfoElement, team);
+                Game newGame = createNewGame(gameInfoElement, team, matchDate);
                 newGames.add(newGame);
-                gameRepository.saveAll(newGames);
             }
         }
+        gameRepository.saveAll(newGames);
     }
 
     private String getHomeTeamName(Element gameInfoElement) {
@@ -118,21 +133,21 @@ public class GameService {
         return gameRepository.findByMatchDateAndTeam_TeamNameAndAwayTeam(matchDate, homeTeamName, awayTeamName).isPresent();
     }
 
-    private Game createNewGame(Element gameInfoElement, Team team) {
-        return new Game().crawledToGameEntity(gameInfoElement, team);
+    private Game createNewGame(Element gameInfoElement, Team team, String matchDate) {
+        return new Game().crawledToGameEntity(gameInfoElement, team, matchDate);
     }
 
     @Transactional(readOnly = true)
     public List<GameResponseDto> gameInfo(String matchDate) {
-        List<Game> games = (gameRepository.findByMatchDateStartingWith(gameMatchDateParser(matchDate)));
+        List<Game> games = gameRepository.findByMatchDateStartingWith(gameMatchDateParser(matchDate));
 
         if (games.isEmpty()) {
             throw new CommonException(CommonError.GAME_NOT_FOUND);
         }
-        return games.stream().map(GameResponseDto::new).toList();
+        return games.stream().map(GameResponseDto::new).collect(Collectors.toList());
     }
 
-    private String gameMatchDateParser(String matchDate){
+    private String gameMatchDateParser(String matchDate) {
         String date = matchDate.substring(5);
         return date.split("-")[0] + "." + date.split("-")[1];
     }

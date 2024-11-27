@@ -1,4 +1,4 @@
-package study.withkbo.notification;
+package study.withkbo.notification.entity;
 
 public enum ReadStatus {
     READ, UNREAD;

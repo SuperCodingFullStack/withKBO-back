@@ -34,7 +34,6 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.0.0")
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
@@ -65,6 +64,9 @@ dependencies {
 
     // swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+    // 웹소켓 라이브러리
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 }
 

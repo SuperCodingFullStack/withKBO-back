@@ -1,5 +1,6 @@
 package study.withkbo.party.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import study.withkbo.common.response.ApiResponseDto;
@@ -18,25 +19,17 @@ public class PartyController {
 
     private final PartyService partyService;
 
-    //아직 공통응답 형식이 정해지지 않아 임시 dto return 중입니다.
-
-    //임시 userId 생성
-    User user = new User();
-
     @PostMapping("/{partyPostId}") //user 구현 후 userid 추가 예정
-    public ApiResponseDto<PartyCreateResponseDto> createParty(@PathVariable("partyPostId") Long partyPostId) {
-        return ApiResponseDto.success(MessageType.SEND,partyService.createParty(partyPostId, user));
+    public void createParty(@PathVariable("partyPostId") Long partyPostId, HttpServletRequest request) {
     }
 
     @GetMapping()//user 구현 후 userid 추가 예정
-    public ApiResponseDto<List<PartyListResponseDto>> getPartyList() {
-
-        return ApiResponseDto.success(MessageType.RETRIEVE,partyService.getPartyList(user));
+    public void getPartyList() {
     }
 
     @DeleteMapping("/{partyId}")//user 구현 후 userid 추가 예정
     public ApiResponseDto deleteParty(@PathVariable("partyId") Long partyId) {
-        partyService.deleteParty(partyId, user);
+        partyService.deleteParty(partyId);
         return ApiResponseDto.success(MessageType.DELETE,partyId);
     }
 }
