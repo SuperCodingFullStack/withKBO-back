@@ -6,7 +6,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import study.withkbo.exception.common.CommonError;
 import study.withkbo.exception.common.CommonException;
-import study.withkbo.user.dto.request.UserLoginRequestDto;
 import study.withkbo.user.dto.request.UserPasswordRequestDto;
 import study.withkbo.user.dto.request.UserSignUpRequestDto;
 import study.withkbo.user.dto.request.UserUpdateRequestDto;
