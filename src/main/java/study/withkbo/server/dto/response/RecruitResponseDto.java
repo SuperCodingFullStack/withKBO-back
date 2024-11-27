@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import study.withkbo.chat.entity.ChatMessage;
+import study.withkbo.chat.entity.ChatRoom;
+import study.withkbo.user.entity.User;
 
 @Getter
 @Setter
@@ -11,9 +14,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RecruitResponseDto {
     // 서버 -> 클라이언트
-    private Long messageId;
-    private String roomName;
-    private String sender;
-    private String message;
-    private String timestamp;
+    private ChatMessage chatMessage;
+    private User user;
 }

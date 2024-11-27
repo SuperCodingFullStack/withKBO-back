@@ -1,9 +1,8 @@
-package study.withkbo.client.handler;
+package study.withkbo.server.handler;
 
 import org.springframework.messaging.simp.stomp.*;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-import study.withkbo.server.service.ChatWebSocketHandler;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -20,13 +19,13 @@ public class MyStompSessionHandler extends StompSessionHandlerAdapter {
         System.out.println("STOMP session connected: " + session.getSessionId());
         WebSocketSession webSocketSession = chatWebSocketHandler.getSession(session.getSessionId());
         if (webSocketSession != null) {
-            System.out.println("WebSocketSession URI: " + webSocketSession.getUri());
             try {
-                // 연결 완료 후 메시지를 전송
                 webSocketSession.sendMessage(new TextMessage("STOMP 연결 후 WebSocket 세션 처리"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            System.out.println("WebSocketSession is null");
         }
 
         // 메시지 전송 및 구독 처리
