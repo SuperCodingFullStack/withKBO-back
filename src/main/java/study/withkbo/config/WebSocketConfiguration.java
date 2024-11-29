@@ -1,5 +1,8 @@
 package study.withkbo.config;
 
+import io.jsonwebtoken.Claims;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
@@ -10,12 +13,21 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.socket.config.annotation.*;
 import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
+import study.withkbo.jwt.JwtUtil;
+
+import java.util.ArrayList;
 
 @Configuration
 @EnableWebSocketMessageBroker
+@RequiredArgsConstructor
+@Slf4j
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
+    private final JwtUtil jwtUtil;
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/portfolio") // 클라이언트 요청 엔드포인트
@@ -46,19 +58,33 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 	}
 
 	// 토큰 인증
-	@Override
-	public void configureClientInboundChannel(ChannelRegistration registration) {
-		// ChannelInterceptor는 WebSocket 메시지를 처리하기 전에 메시지를 가로채서 사용자의 권한을 확인할 수 있게 도와줍니다.
-		registration.interceptors(new ChannelInterceptor() {
-			@Override
-			public Message<?> preSend(Message<?> message, MessageChannel channel) { // WebSocket Message, 전송할 채널
-				// message에서 StompHeaderAccessor을 얻어 STOMP 메시지의 헤더에 접근
-				StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-				if (StompCommand.CONNECT.equals(accessor.getCommand())) { // WebSocket 세션에 연결
-					// Access authentication header(s) and invoke accessor.setUser(user) - 인증 헤더 처리, 사용자 정보 설정
-				}
-				return message;
-			}
-		});
-	}
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(new ChannelInterceptor() {
+            @Override
+            public Message<?> preSend(Message<?> message, MessageChannel channel) {
+                StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+                // STOMP 연결 요청 확인
+                if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+                    // Authorization 헤더에서 JWT 추출
+                    String token = accessor.getFirstNativeHeader("Authorization");
+                    if (token != null) {
+                        // JwtUtil을 사용하여 JWT 검증
+                        if (!jwtUtil.validateToken(token)) {
+							Claims claims = jwtUtil.getUserInfoFromToken(token);
+							String userId = claims.getSubject(); // 토큰에서 사용자 정보 (userId)를 추출-
+							Authentication authentication = new UsernamePasswordAuthenticationToken(userId, null, new ArrayList<>());
+							SecurityContextHolder.getContext().setAuthentication(authentication);
+                        } else {
+							log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
+						}
+                    } else {
+                        log.error("Ill-Formed JWT token OR Missing Authentication, 형식이 잘못된 JWT token 또는 Authentication이 누락되었습니다.");
+                    }
+                }
+                return message;
+            }
+        });
+    }
+
 }
