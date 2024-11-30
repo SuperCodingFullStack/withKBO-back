@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import study.withkbo.comment.dto.request.CommentRequestDto;
 import study.withkbo.comment.dto.response.CommentPageResponseDto;
 import study.withkbo.comment.dto.response.CommentResponseDto;
@@ -27,12 +28,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CommentService {
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
-    private PartyPostRepository partyPostRepository;
+    private final PartyPostRepository partyPostRepository;
 
 
 
     // 지정된 게시글의 댓글들을 한번에 몇개씩 전체출력이 아닌 부분출력을 위한 페이지네이션
+    @Transactional
     public CommentPageResponseDto getCommentsByPostId(Long postId, int page, int size) {
         // 페이지 번호와 크기 유효성 검사 컨트롤러단에서 이미 시행
         Pageable pageable = PageRequest.of(page, size); // 페이지 번호와 페이지 크기 설정
@@ -52,6 +53,7 @@ public class CommentService {
     }
 
     // 댓글 생성
+    @Transactional
     public CommentResponseDto createComment(CommentRequestDto commentRequestDto, User user, Long postId) {
 
         PartyPost partyPost = partyPostRepository.findById(postId)
@@ -69,6 +71,7 @@ public class CommentService {
     }
 
     // 댓글 삭제
+    @Transactional
     public void deleteComment(Long id, User user) {
 
 

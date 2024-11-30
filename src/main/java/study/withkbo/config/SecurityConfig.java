@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -24,6 +25,7 @@ import study.withkbo.security.UserDetailsServiceImpl;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true) // 최신 방식으로 변경
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -87,6 +89,8 @@ public class SecurityConfig {
                         .requestMatchers("/", "/api/user/login", "api/user/signUp", "/swagger-ui/**","/swagger-resources/**",
                                 "/v3/api-docs/**", "/portfolio").permitAll() //메인, 로그인 , 회원가입 페이지 접근 허용
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/post/s").permitAll() // 인증 없이 접근 허용
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // **프리플라이트 요청 허용**
                         .anyRequest().authenticated()
         );
 

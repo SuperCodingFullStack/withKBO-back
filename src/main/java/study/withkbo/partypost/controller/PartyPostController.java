@@ -52,11 +52,11 @@ public class PartyPostController {
 
     // 특정 게시판 id를 가지고 특정 글을 반환하는 것
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-    @GetMapping("/{id}")
-    public ApiResponseDto<PostResponseDto> getPostById(@PathVariable("id") Long id) {
+    @GetMapping("/{postId}")
+    public ApiResponseDto<PostResponseDto> getPostById(@PathVariable("postId") Long postId) {
 
         // 서비스 호출로 게시물 가져오기
-        PostResponseDto result = partyPostService.getPartyPostById(id);
+        PostResponseDto result = partyPostService.getPartyPostById(postId);
 
         return ApiResponseDto.success(MessageType.RETRIEVE, result);
     }

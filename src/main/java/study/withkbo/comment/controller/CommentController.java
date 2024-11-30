@@ -25,7 +25,7 @@ public class CommentController {
     // 댓글 조회 페이지네이션
     @GetMapping("/{postId}")
     public ApiResponseDto<CommentPageResponseDto> getCommentsByPostId(
-            @PathVariable Long id,
+            @PathVariable Long postId,
             @RequestParam(defaultValue = "0") int page,  // 기본 페이지는 0
             @RequestParam(defaultValue = "10") int size  // 기본 페이지 크기는 10
     ) {
@@ -33,7 +33,7 @@ public class CommentController {
         if (page < 0) page = 0;
         if (size <= 0) size = 10;
 
-        CommentPageResponseDto result = commentService.getCommentsByPostId(id, page, size);
+        CommentPageResponseDto result = commentService.getCommentsByPostId(postId, page, size);
         return ApiResponseDto.success(MessageType.RETRIEVE, result);
     }
 

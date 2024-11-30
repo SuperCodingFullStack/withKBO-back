@@ -8,6 +8,7 @@ import study.withkbo.game.entity.Game;
 import study.withkbo.partypost.dto.request.PartyPostUpdateRequestDto;
 import study.withkbo.user.entity.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -55,9 +56,9 @@ public class PartyPost  extends BaseTime {
     @Column(nullable = false, name = "post_state", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean postState;  // 글 활성화 여부
 
-    @OneToMany(mappedBy = "partyPost", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "partyPost", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Comment> comments = List.of();;  // 해당 게시글에 달린 댓글들
+    private List<Comment> comments = new ArrayList<>(); // 해당 게시글에 달린 가변적인 댓글들
 
     // 필요에 따라 추가: 기존 필드 기반 빌더 생성 메서드
     public PartyPost toBuilderWithUpdates(Game game, PartyPostUpdateRequestDto updateDto) {
