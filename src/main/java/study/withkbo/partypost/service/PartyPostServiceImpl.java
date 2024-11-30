@@ -1,6 +1,7 @@
 package study.withkbo.partypost.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PartyPostServiceImpl implements PartyPostService {
 
     private final PartyPostRepository partyPostRepository;
@@ -37,17 +39,20 @@ public class PartyPostServiceImpl implements PartyPostService {
 
 
     //    @Operation("게시글 아이디로 상세게시글 가져오기")
+    @Transactional
     @Override
     public PostResponseDto getPartyPostById(Long id) {
         PartyPost partyPost = partyPostRepository.findById(id)
                 .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
+      log.info("getPartyPostById: {}", partyPost);
 
         return PostResponseDto.fromEntity(partyPost);  // 엔티티를 DTO로 변환하여 반환
     }
 
     // 게시글 작성
-    @Transactional
+
     @Override
+    @Transactional
     public PartyPostWriteResponseDto createPost(PartyPostWriteRequestDto partyPostRequestDto, User user) {
 
         Game game = gameRepository.findById(partyPostRequestDto.getGameId())

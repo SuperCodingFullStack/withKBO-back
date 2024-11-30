@@ -22,7 +22,7 @@ public class HitController {
     private final HitService hitService;
 
     @PostMapping("/{postId}")
-    public ApiResponseDto<Void> toggleLike(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ApiResponseDto<Void> hitUp(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         // 토큰에서 유저만 뜯어서 가져오기
         User user =userDetails.getUser();

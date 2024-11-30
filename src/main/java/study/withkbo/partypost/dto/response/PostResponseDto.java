@@ -70,7 +70,7 @@ public class PostResponseDto {
                 .latitude(partyPost.getGame().getTeam().getLatitude().toString()) // 우리팀? 경기장 위치 위도 문자열로
                 .longitude(partyPost.getGame().getTeam().getLongitude().toString()) // 우리팀? 경기장 위치 경도 문자열로
                 .matchDate(partyPost.getGame().getMatchDate()) // 경기 일정
-                .matchDate(partyPost.getGame().getMatchTime()) // 경기 시간
+                .matchTime(partyPost.getGame().getMatchTime()) // 경기 시간
                 .maxPeopleNum(partyPost.getMaxPeopleNum()) // 최대 참여 인원
                 .currentPeopleNum(partyPost.getCurrentPeopleNum()) // 현재 참여 인원
                 .likeCount(partyPost.getLikeCount()) // 좋아요 수

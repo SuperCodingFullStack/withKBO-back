@@ -102,6 +102,7 @@ public class PartyPostController {
     }
 
     // 마이페이지에서의 특정 조건 리스트 반환
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/myList/{type}")
     public ApiResponseDto<List<PartyPostMyPageResponseDto>> getMyList(@PathVariable("type") String type, @AuthenticationPrincipal UserDetailsImpl userDetails ) {
         // 토큰에서 유저만 뜯어서 가져오기
