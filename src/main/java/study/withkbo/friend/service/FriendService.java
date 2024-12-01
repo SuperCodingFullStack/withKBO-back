@@ -27,6 +27,7 @@ import java.util.List;
 public class FriendService {
 
     private final FriendRepository friendRepository;
+    private final UserRepository userRepository;
 
     public FriendResponseDto sendFriendRequest(FriendRequestDto requestDto, User user) {
 
