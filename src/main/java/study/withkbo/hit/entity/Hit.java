@@ -20,6 +20,7 @@ public class Hit {
     private User user; // 어떤 유저가 조회했는가
 
     @ManyToOne(fetch = FetchType.LAZY)
+
     @JoinColumn(name = "party_post_id", nullable = false)
     private PartyPost partyPost; // 어떤 게시글을 조회했는가
 

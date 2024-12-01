@@ -89,7 +89,7 @@ public class PartyPostController {
     }
 
     // 삭제 요청
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or (hasAuthority('ROLE_USER') and #userDetails.user.id == #id)")
     @DeleteMapping("/{id}")
     public ApiResponseDto<PartyPostDeleteResponseDto> deletePost(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 토큰에서 유저만 뜯어서 가져오기

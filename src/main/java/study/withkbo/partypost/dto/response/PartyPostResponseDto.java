@@ -58,7 +58,7 @@ public class PartyPostResponseDto {
                 .myTeamImg(partyPost.getGame().getTeam().getTeamName()) // 우리 팀 이미지 가져오기 위한 팀이름
                 .opposingTeam(partyPost.getGame().getAwayTeam()) // 상대팀 이미지 가져오기 위한 상대팀 이름
                 .matchDate(partyPost.getGame().getMatchDate()) // 경기 일정
-                .matchDate(partyPost.getGame().getMatchTime()) // 경기 시간
+                .matchTime(partyPost.getGame().getMatchTime()) // 경기 시간
                 .maxPeopleNum(partyPost.getMaxPeopleNum()) // 최대 참여 인원
                 .currentPeopleNum(partyPost.getCurrentPeopleNum()) // 현재 참여 인원
                 .likeCount(partyPost.getLikeCount()) // 좋아요 수
