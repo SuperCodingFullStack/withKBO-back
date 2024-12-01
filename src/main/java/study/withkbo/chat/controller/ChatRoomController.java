@@ -24,9 +24,12 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     // 채팅방 생성
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_ADMIN')")
     @PostMapping("/create")
-    public ApiResponseDto<ChatRoom> createChatRoom(@RequestBody ChatRoomRequestDto chatRoomRequestDTO) {
-        ChatRoom chatRoom = chatRoomService.createChatRoom(chatRoomRequestDTO.getRoomName());
+    public ApiResponseDto<ChatRoom> createChatRoom(@RequestBody ChatRoomRequestDto chatRoomRequestDTO,
+                                                   @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User inviter = userDetails.getUser();
+        ChatRoom chatRoom = chatRoomService.createChatRoom(chatRoomRequestDTO.getRoomName(), inviter);
         return ApiResponseDto.success(MessageType.CREATE, chatRoom);
     }
 

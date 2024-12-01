@@ -28,7 +28,7 @@ public class ChatRoomService {
     private final ChatMessageRepository chatMessageRepository;
 
     // 채팅방 생성
-    public ChatRoom createChatRoom(String roomName) {
+    public ChatRoom createChatRoom(String roomName, User inviter) {
         if (roomName == null || roomName.isEmpty()) {
             throw new CommonException(CommonError.NOT_FOUND);
         }
@@ -39,7 +39,15 @@ public class ChatRoomService {
 
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.setRoomName(roomName);
-        return chatRoomRepository.save(chatRoom);
+        ChatRoom saveRoom = chatRoomRepository.save(chatRoom);
+
+        ChatInvitation chatInvitation = new ChatInvitation();
+        chatInvitation.setRoom(saveRoom);
+        chatInvitation.setInviter(inviter);
+        chatInvitation.setStatus("생성됨");
+        chatInvitationRepository.save(chatInvitation);
+
+        return saveRoom;
     }
 
     // 전체 채팅방 조회
@@ -58,6 +66,7 @@ public class ChatRoomService {
     // 채팅방 나가기
     public void leaveChatRoom(Long roomId, @AuthenticationPrincipal User user) {
         getOutChatRoom(roomId, user);
+        checkAndDeleteChatRoom(roomId);
     }
 
     // 채팅방에서 유저 삭제
@@ -72,11 +81,12 @@ public class ChatRoomService {
             throw new CommonException(CommonError.NOT_FOUND);
         }
         chatInvitationRepository.deleteByRoom(chatRoom);
-        deleteChatRoom(chatRoom);
     }
 
     // 채팅방이 0명이 될 경우 채팅방 삭제
-    private void deleteChatRoom(ChatRoom chatRoom) {
+    private void checkAndDeleteChatRoom(Long roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
         long userCount = chatInvitationRepository.countByRoom(chatRoom);
         if (userCount == 0) {
             chatRoomRepository.delete(chatRoom);
