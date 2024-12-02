@@ -1,8 +1,12 @@
 package study.withkbo.partypost.Specification;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
+import study.withkbo.like.entity.Like;
 import study.withkbo.partypost.entity.PartyPost;
+import study.withkbo.user.entity.User;
 
 public class PartyPostSpecification {
 
@@ -51,6 +55,22 @@ public class PartyPostSpecification {
         return (root, query, criteriaBuilder) -> {
             query.orderBy(criteriaBuilder.desc(root.get("likeCount")));
             return criteriaBuilder.conjunction(); // 항상 true 반환
+        };
+    }
+
+    // 특정 사용자가 좋아요를 누른 게시글만 필터링하는 Specification
+    public static Specification<PartyPost> hasLikedByUser(User user) {
+        return (root, query, criteriaBuilder) -> {
+            // "likes" 필드가 Join을 통해 연결되어야 할 수도 있습니다.
+            Join<PartyPost, Like> likeJoin = root.join("likes", JoinType.LEFT);
+            return criteriaBuilder.equal(likeJoin.get("user"), user);
+        };
+    }
+
+    // 특정 사용자가 작성한 게시글만 필터링하는 Specification
+    public static Specification<PartyPost> hasPostsByUser(User user) {
+        return (root, query, criteriaBuilder) -> {
+            return criteriaBuilder.equal(root.get("user"), user);
         };
     }
 }

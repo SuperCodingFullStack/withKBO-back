@@ -114,4 +114,38 @@ public class PartyPostController {
         return ApiResponseDto.success(MessageType.RETRIEVE, result);
     }
 
+    // 메인페이지에서 특정유저가 좋아요를 누른글만 조회하고자 할 때 사용
+    @GetMapping("/likedPosts")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    public ApiResponseDto<PartyPostPageResponseDto> findLikedPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        // 토큰에서 유저만 뜯어서 가져오기
+        User user =userDetails.getUser();
+
+
+        // 좋아요를 누른 글 조회 서비스 호출
+        PartyPostPageResponseDto result = partyPostService.getLikedPosts(user, page, size);
+
+        return ApiResponseDto.success(MessageType.RETRIEVE, result);
+    }
+
+    // 메인에서 자기가 작성한 글들만 조회하려고 할 때
+    @GetMapping("/myPosts")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    public ApiResponseDto<PartyPostPageResponseDto> findMyPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        // 토큰에서 유저 정보 가져오기
+        User user = userDetails.getUser();
+
+        // 사용자가 작성한 글 조회 서비스 호출
+        PartyPostPageResponseDto result = partyPostService.getMyPosts(user, page, size);
+
+        return ApiResponseDto.success(MessageType.RETRIEVE, result);
+    }
+
+
 }

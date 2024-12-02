@@ -1,5 +1,7 @@
 package study.withkbo.partypost.service;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -205,6 +207,68 @@ public class PartyPostServiceImpl implements PartyPostService {
             default -> // 예외 처리
                     throw new CommonException(CommonError.BAD_REQUEST);
         };
+    }
+
+    @Transactional
+    @Override
+    public PartyPostPageResponseDto getLikedPosts(User user, int page, int size) {
+        // 페이지 번호와 크기 유효성 검사
+        if (page < 0) page = 0;
+        if (size < 1) size = 10;
+
+        // Pageable 생성
+        Pageable pageable = PageRequest.of(page, size);
+
+        // 좋아요를 누른 게시글만 조회하는 Specification 생성
+        Specification<PartyPost> spec = PartyPostSpecification.hasLikedByUser(user);
+
+        // 데이터 조회
+        Page<PartyPost> partyPostPage = partyPostRepository.findAll(spec, pageable);
+
+        // DTO 변환
+        List<PartyPostResponseDto> partyPostResponseDtos = partyPostPage.getContent().stream()
+                .map(PartyPostResponseDto::fromEntity)
+                .collect(Collectors.toList());
+
+        // 페이지네이션 정보와 DTO 반환
+        return PartyPostPageResponseDto.fromPartyPostResponseDto(
+                partyPostResponseDtos,
+                partyPostPage.getTotalPages(),
+                partyPostPage.getTotalElements(),
+                partyPostPage.getNumber(),
+                partyPostPage.getSize()
+        );
+    }
+
+    @Transactional
+    @Override
+    public PartyPostPageResponseDto getMyPosts(User user, int page, int size) {
+        // 페이지 번호와 크기 유효성 검사
+        if (page < 0) page = 0;
+        if (size < 1) size = 10;
+
+        // Pageable 생성
+        Pageable pageable = PageRequest.of(page, size);
+
+        // 사용자 ID를 기반으로 필터링하는 Specification 호출
+        Specification<PartyPost> spec = PartyPostSpecification.hasPostsByUser(user);
+
+        // 데이터 조회
+        Page<PartyPost> partyPostPage = partyPostRepository.findAll(spec, pageable);
+
+        // DTO 변환
+        List<PartyPostResponseDto> partyPostResponseDtos = partyPostPage.getContent().stream()
+                .map(PartyPostResponseDto::fromEntity)
+                .collect(Collectors.toList());
+
+        // 페이지네이션 정보와 DTO 반환
+        return PartyPostPageResponseDto.fromPartyPostResponseDto(
+                partyPostResponseDtos,
+                partyPostPage.getTotalPages(),
+                partyPostPage.getTotalElements(),
+                partyPostPage.getNumber(),
+                partyPostPage.getSize()
+        );
     }
 
 }
