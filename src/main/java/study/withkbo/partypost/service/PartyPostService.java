@@ -29,6 +29,12 @@ public interface PartyPostService {
     // 경민님 특정 마이페이지 글 조회
     List<PartyPostMyPageResponseDto> findMyPostsByType(String type, User user);
 
+    // 메인에서 특정유저가 좋아요 누른것만 가져와 조회하기
+    PartyPostPageResponseDto getLikedPosts(User user, int page, int size);
+
+    // 메인에서 특정유저가 자기가 작성한 것만 가져와 조회하기
+    PartyPostPageResponseDto getMyPosts(User user, int page, int size);
+
     PartyPostPageResponseDto getPartyPostsWithCursor(String teamName, Long gameId, Long cursor, int size, String[] sortBy, boolean ascending);
 }
 

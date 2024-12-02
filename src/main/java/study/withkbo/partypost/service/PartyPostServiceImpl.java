@@ -1,6 +1,9 @@
 package study.withkbo.partypost.service;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +14,7 @@ import study.withkbo.exception.common.CommonError;
 import study.withkbo.exception.common.CommonException;
 import study.withkbo.game.entity.Game;
 import study.withkbo.game.repository.GameRepository;
+import study.withkbo.hit.repository.HitRepository;
 import study.withkbo.like.entity.Like;
 import study.withkbo.like.repository.LikeRepository;
 import study.withkbo.partypost.Specification.PartyPostSpecification;
@@ -23,29 +27,35 @@ import study.withkbo.user.entity.User;
 import study.withkbo.user.entity.UserRoleEnum;
 
 
+import java.util.Arrays;
 import java.util.List;
 
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PartyPostServiceImpl implements PartyPostService {
 
     private final PartyPostRepository partyPostRepository;
     private final GameRepository gameRepository;
     private final LikeRepository likeRepository;
-
+    private final HitRepository hitRepository;
 
     //    @Operation("게시글 아이디로 상세게시글 가져오기")
+    @Transactional
     @Override
     public PostResponseDto getPartyPostById(Long id) {
         PartyPost partyPost = partyPostRepository.findById(id)
                 .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
+      log.info("getPartyPostById: {}", partyPost);
 
         return PostResponseDto.fromEntity(partyPost);  // 엔티티를 DTO로 변환하여 반환
     }
 
     // 게시글 작성
+
+
     @Transactional
     @Override
     public PartyPostWriteResponseDto createPost(PartyPostWriteRequestDto partyPostRequestDto, User user) {
@@ -76,15 +86,17 @@ public class PartyPostServiceImpl implements PartyPostService {
     @Override
     public PartyPostUpdateResponseDto updatePartyPost(Long id, User user, PartyPostUpdateRequestDto updateDto) {
 
+        // 게시물 아이디로 조회
         PartyPost post = partyPostRepository.findById(id)
                 .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
 
-        Game game = post.getGame();
-
-        // 글 작성자와 요청한 유저가 같은지 확인
-        if (!post.getUser().getId().equals(user.getId()) || !user.getRole().equals(UserRoleEnum.ADMIN)) { // 다르거나 관리자가 아니면
+        // 작성자가 현재 로그인한 사용자와 일치하는지 확인
+        if (!post.getUser().getId().equals(user.getId())) {
             throw new CommonException(CommonError.FORBIDDEN);
         }
+
+        Game game = post.getGame();
+
 
         // 경기 정보 수정
         if (!game.getId().equals(updateDto.getGameId())) {
@@ -102,24 +114,27 @@ public class PartyPostServiceImpl implements PartyPostService {
 
     // 글을 삭제하는 것
     @Override
+    @Transactional
     public PartyPostDeleteResponseDto deletePartyPost(Long id, User user) {
+
+        // 먼저 Hit 테이블에서 해당 partyPostId에 관련된 데이터를 삭제
+        hitRepository.deleteByPartyPostId(id);
 
         PartyPost deletePartyPost = partyPostRepository.findById(id)
                 .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
 
-        if (!deletePartyPost.getUser().getId().equals(user.getId()) && !user.getRole().equals(UserRoleEnum.ADMIN)) { // 관리자가 아니거나 동일한 유저가 아니라면
-            throw new CommonException(CommonError.FORBIDDEN);
-        }
+
         partyPostRepository.delete(deletePartyPost);
         return PartyPostDeleteResponseDto.builder()
                 .id(deletePartyPost.getId())
                 .build();
     }
 
-   
 
 
-    // 검색 조건에 따른 리스트 출력
+
+    // 페이지네이션에 따른 조건 조회
+    @Transactional
     @Override
     public PartyPostPageResponseDto getPartyPosts(String teamName, Long gameId, int page, int size, String[] sortBy, boolean ascending) {
 
@@ -140,7 +155,7 @@ public class PartyPostServiceImpl implements PartyPostService {
                 : PartyPostSpecification.orderByCreatedAtDesc());
 
         // 동적으로 정렬 기준 추가
-        for (String sort : sortBy) {
+        for (String sort : sortBy) { // sortBy가 null이면 이 부분에서 NullPointerException 발생
             switch (sort) {
                 case "hitCount":
                     spec = spec.and(PartyPostSpecification.orderByHitCountDesc());
@@ -188,6 +203,68 @@ public class PartyPostServiceImpl implements PartyPostService {
             default -> // 예외 처리
                     throw new CommonException(CommonError.BAD_REQUEST);
         };
+    }
+
+    @Transactional
+    @Override
+    public PartyPostPageResponseDto getLikedPosts(User user, int page, int size) {
+        // 페이지 번호와 크기 유효성 검사
+        if (page < 0) page = 0;
+        if (size < 1) size = 10;
+
+        // Pageable 생성
+        Pageable pageable = PageRequest.of(page, size);
+
+        // 좋아요를 누른 게시글만 조회하는 Specification 생성
+        Specification<PartyPost> spec = PartyPostSpecification.hasLikedByUser(user);
+
+        // 데이터 조회
+        Page<PartyPost> partyPostPage = partyPostRepository.findAll(spec, pageable);
+
+        // DTO 변환
+        List<PartyPostResponseDto> partyPostResponseDtos = partyPostPage.getContent().stream()
+                .map(PartyPostResponseDto::fromEntity)
+                .collect(Collectors.toList());
+
+        // 페이지네이션 정보와 DTO 반환
+        return PartyPostPageResponseDto.fromPartyPostResponseDto(
+                partyPostResponseDtos,
+                partyPostPage.getTotalPages(),
+                partyPostPage.getTotalElements(),
+                partyPostPage.getNumber(),
+                partyPostPage.getSize()
+        );
+    }
+
+    @Transactional
+    @Override
+    public PartyPostPageResponseDto getMyPosts(User user, int page, int size) {
+        // 페이지 번호와 크기 유효성 검사
+        if (page < 0) page = 0;
+        if (size < 1) size = 10;
+
+        // Pageable 생성
+        Pageable pageable = PageRequest.of(page, size);
+
+        // 사용자 ID를 기반으로 필터링하는 Specification 호출
+        Specification<PartyPost> spec = PartyPostSpecification.hasPostsByUser(user);
+
+        // 데이터 조회
+        Page<PartyPost> partyPostPage = partyPostRepository.findAll(spec, pageable);
+
+        // DTO 변환
+        List<PartyPostResponseDto> partyPostResponseDtos = partyPostPage.getContent().stream()
+                .map(PartyPostResponseDto::fromEntity)
+                .collect(Collectors.toList());
+
+        // 페이지네이션 정보와 DTO 반환
+        return PartyPostPageResponseDto.fromPartyPostResponseDto(
+                partyPostResponseDtos,
+                partyPostPage.getTotalPages(),
+                partyPostPage.getTotalElements(),
+                partyPostPage.getNumber(),
+                partyPostPage.getSize()
+        );
     }
 
     @Override

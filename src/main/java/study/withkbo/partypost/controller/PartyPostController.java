@@ -52,11 +52,11 @@ public class PartyPostController {
 
     // 특정 게시판 id를 가지고 특정 글을 반환하는 것
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-    @GetMapping("/{id}")
-    public ApiResponseDto<PostResponseDto> getPostById(@PathVariable("id") Long id) {
+    @GetMapping("/{postId}")
+    public ApiResponseDto<PostResponseDto> getPostById(@PathVariable("postId") Long postId) {
 
         // 서비스 호출로 게시물 가져오기
-        PostResponseDto result = partyPostService.getPartyPostById(id);
+        PostResponseDto result = partyPostService.getPartyPostById(postId);
 
         return ApiResponseDto.success(MessageType.RETRIEVE, result);
     }
@@ -89,7 +89,7 @@ public class PartyPostController {
     }
 
     // 삭제 요청
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or (hasAuthority('ROLE_USER') and #userDetails.user.id == #id)")
     @DeleteMapping("/{id}")
     public ApiResponseDto<PartyPostDeleteResponseDto> deletePost(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         // 토큰에서 유저만 뜯어서 가져오기
@@ -102,6 +102,7 @@ public class PartyPostController {
     }
 
     // 마이페이지에서의 특정 조건 리스트 반환
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/myList/{type}")
     public ApiResponseDto<List<PartyPostMyPageResponseDto>> getMyList(@PathVariable("type") String type, @AuthenticationPrincipal UserDetailsImpl userDetails ) {
         // 토큰에서 유저만 뜯어서 가져오기
@@ -113,6 +114,7 @@ public class PartyPostController {
         return ApiResponseDto.success(MessageType.RETRIEVE, result);
     }
 
+    // 커서 기반 페이지네이션
     @GetMapping("")
     public ApiResponseDto<?> getPartyPosts(@RequestParam(value = "teamName", required = false) String teamName,
                                             @RequestParam(value = "gameId", required = false) Long gameId,
@@ -124,5 +126,39 @@ public class PartyPostController {
         PartyPostPageResponseDto result = partyPostService.getPartyPostsWithCursor(teamName,gameId,cursor,5,sortBy, ascending);
         return ApiResponseDto.success(MessageType.RETRIEVE,result);
     }
+
+    // 메인페이지에서 특정유저가 좋아요를 누른글만 조회하고자 할 때 사용
+    @GetMapping("/likedPosts")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    public ApiResponseDto<PartyPostPageResponseDto> findLikedPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        // 토큰에서 유저만 뜯어서 가져오기
+        User user =userDetails.getUser();
+
+
+        // 좋아요를 누른 글 조회 서비스 호출
+        PartyPostPageResponseDto result = partyPostService.getLikedPosts(user, page, size);
+
+        return ApiResponseDto.success(MessageType.RETRIEVE, result);
+    }
+
+    // 메인에서 자기가 작성한 글들만 조회하려고 할 때
+    @GetMapping("/myPosts")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    public ApiResponseDto<PartyPostPageResponseDto> findMyPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        // 토큰에서 유저 정보 가져오기
+        User user = userDetails.getUser();
+
+        // 사용자가 작성한 글 조회 서비스 호출
+        PartyPostPageResponseDto result = partyPostService.getMyPosts(user, page, size);
+
+        return ApiResponseDto.success(MessageType.RETRIEVE, result);
+    }
+
 
 }

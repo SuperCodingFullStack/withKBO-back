@@ -19,25 +19,11 @@ public class LikeService {
     private final PartyPostRepository partyPostRepository;
 
     // 어떤 유저가 어떤 게시글을 좋아요 한 것이 있는지 확인하는 메소드
-    public boolean existsByUserAndPartyPost(User user, PartyPost partyPost) {
-        // user 가 partyPost에 좋아요를 한 것이 있으면 true를 아니면 false를 반환
-        return likeRepository.existsByUserAndPartyPost(user, partyPost);
-    }
-
-    // 유저의 좋아요를 삭제
-    @Transactional
-    public void removeLike(User user, PartyPost partyPost) {
-        Like like = likeRepository.findByUserAndPartyPost(user, partyPost)
+    public boolean isLiked(Long postId, User user) {
+        PartyPost partyPost = partyPostRepository.findById(postId)
                 .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
-        likeRepository.delete(like);
-    }
 
-
-    // 유저가 해당 게시글에 좋아요를 추가
-    @Transactional
-    public void addLike(User user, PartyPost partyPost) {
-        likeRepository.save(new Like(user, partyPost));
-
+        return likeRepository.findByUserAndPartyPost(user, partyPost).isPresent();
     }
 
 
