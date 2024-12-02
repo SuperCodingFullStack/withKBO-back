@@ -35,7 +35,7 @@ public class PartyPostController {
             @RequestParam(defaultValue = "10") int size,  // 기본 페이지 크기는 10
             @RequestParam(value = "teamName", required = false) String teamName, // 팀이름
             @RequestParam(value = "gameId", required = false) Long gameId, // 게임 id
-            @RequestParam(value = "sortyBy", required = false) String[] sortBy, // 정렬 기준들
+            @RequestParam(value = "sortyBy", required = false, defaultValue = "") String[] sortBy, // 정렬 기준들
             @RequestParam(defaultValue = "false") boolean ascending // 기본은 내림차순
             ) {
 
@@ -114,8 +114,14 @@ public class PartyPostController {
     }
 
     @GetMapping("")
-    public ApiResponseDto<?> getPartyPosts(){
-        PartyPostPageResponseDto result = partyPostService.getPartyPostsWithCursor(null,1L,null,5,new String[]{"hitCount"}, false);
+    public ApiResponseDto<?> getPartyPosts(@RequestParam(value = "teamName", required = false) String teamName,
+                                            @RequestParam(value = "gameId", required = false) Long gameId,
+                                            @RequestParam(value = "sortyBy", required = false, defaultValue = "") String[] sortBy,
+                                            @RequestParam(defaultValue = "true") boolean ascending ,
+                                           @RequestParam(value = "cursor", required = false) Long cursor
+    ){
+        //임시 test 코드
+        PartyPostPageResponseDto result = partyPostService.getPartyPostsWithCursor(teamName,gameId,cursor,5,sortBy, ascending);
         return ApiResponseDto.success(MessageType.RETRIEVE,result);
     }
 
