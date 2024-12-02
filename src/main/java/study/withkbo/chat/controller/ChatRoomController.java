@@ -14,7 +14,10 @@ import study.withkbo.exception.common.CommonException;
 import study.withkbo.security.UserDetailsImpl;
 import study.withkbo.user.entity.User;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,26 +37,39 @@ public class ChatRoomController {
     }
 
     // 채팅방 조회
+    @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_ADMIN')")
     @GetMapping("/user/chatrooms")
-    public ApiResponseDto<List<ChatRoom>> getChatRoomByUserId(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ApiResponseDto<List<ChatRoomRequestDto>> getChatRoomByUserId(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
-        List<ChatRoom> chatRooms = chatRoomService.getChatRoomByUserId(user.getId());
+        List<ChatRoomRequestDto> chatRooms = chatRoomService.getChatRoomByUserId(user.getId());
         return ApiResponseDto.success(MessageType.RETRIEVE, chatRooms);
     }
     // 특정 채팅방 조회 (부분 문자열도 가능)
     @GetMapping("/room/{roomName}")
-    public ApiResponseDto<List<ChatRoom>> getChatRoomByRoomName(@PathVariable String roomName) {
+    public ApiResponseDto<List<ChatRoomRequestDto>> getChatRoomByRoomName(@PathVariable String roomName) {
         List<ChatRoom> rooms = chatRoomService.getChatRoomByRoomName(roomName);
         if (rooms.isEmpty()) {
             throw new CommonException(CommonError.NOT_FOUND);
         }
-        return ApiResponseDto.success(MessageType.RETRIEVE, rooms);
+        List<ChatRoomRequestDto> requestDtos = rooms.stream()
+                .map(room -> {
+                    String formattedDate = room.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "T00:00:00";
+                    LocalDateTime localDateTime = LocalDateTime.parse(formattedDate);
+                    return ChatRoomRequestDto.builder()
+                            .id(room.getId())
+                            .roomName(room.getRoomName())
+                            .createdDate(localDateTime)
+                            .build();
+                })
+                .collect(Collectors.toList());
+        return ApiResponseDto.success(MessageType.RETRIEVE, requestDtos);
     }
 
     // 채팅방 나가기
     @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_ADMIN')")
     @DeleteMapping("rooms/{roomId}/leave")
-    public ApiResponseDto<Boolean> leaveRoom(@PathVariable Long roomId, @AuthenticationPrincipal User user) {
+    public ApiResponseDto<Boolean> leaveRoom(@PathVariable Long roomId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
         chatRoomService.leaveChatRoom(roomId, user);
         return ApiResponseDto.success(MessageType.DELETE, true);
     }
