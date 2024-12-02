@@ -28,4 +28,7 @@ public interface PartyPostService {
 
     // 경민님 특정 마이페이지 글 조회
     List<PartyPostMyPageResponseDto> findMyPostsByType(String type, User user);
+
+    PartyPostPageResponseDto getPartyPostsWithCursor(String teamName, Long gameId, Long cursor, int size, String[] sortBy, boolean ascending);
 }
+
