@@ -1,13 +1,8 @@
 package study.withkbo.team.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.jsoup.nodes.Element;
-import study.withkbo.game.entity.Game;
 import jakarta.persistence.*;
-import study.withkbo.player.entity.Player;
-
-import java.util.List;
 
 @Entity
 @Getter
@@ -20,14 +15,6 @@ public class Team {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Game> games;
-
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Player> players;
 
     private int ranking;
     private String teamName;
@@ -78,53 +65,53 @@ public class Team {
         switch (teamName) {
             case "KIA":
                 this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/KIA_LOGO.png";
-                this.latitude = 35.1606;
-                this.longitude = 126.8535;
+                this.latitude = 35.16816;
+                this.longitude = 126.8892;
                 return "광주-KIA 챔피언스필드";
             case "두산":
                 this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/DOOSAN_LOGO.png";
-                this.latitude = 37.5126;
-                this.longitude = 127.0712;
+                this.latitude = 37.51223;
+                this.longitude = 127.0725;
                 return "잠실 야구장";
             case "삼성":
                 this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/SAMSUNG_LOGO.png";
-                this.latitude = 35.8676;
-                this.longitude = 128.6014;
+                this.latitude = 35.84135;
+                this.longitude = 128.6820;
                 return "대구 삼성라이온즈 파크";
             case "LG":
                 this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/LG_LOGO.png";
-                this.latitude = 37.5126;
-                this.longitude = 127.0712;
+                this.latitude = 37.51223;
+                this.longitude = 127.0725;
                 return "잠실 야구장";
             case "키움":
                 this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/KIWOOM_LOGO.png";
-                this.latitude = 37.5267;
-                this.longitude = 126.9028;
+                this.latitude = 37.49908;
+                this.longitude = 126.8676;
                 return "고척스카이돔";
             case "SSG":
                 this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/SSG_LOGO.png";
-                this.latitude = 37.4550;
-                this.longitude = 126.7045;
+                this.latitude = 37.43720;
+                this.longitude = 126.6936;
                 return "인천 SSG 랜더스 필드";
             case "한화":
                 this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/HANWHA_LOGO.png";
-                this.latitude = 36.3506;
-                this.longitude = 127.3849;
+                this.latitude = 36.31721;
+                this.longitude = 127.4297;
                 return "대전 한화생명 이글스 파크";
             case "롯데":
                 this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/LOTTE_LOGO.png";
-                this.latitude = 35.1453;
-                this.longitude = 129.0584;
+                this.latitude = 35.19416;
+                this.longitude = 129.0617;
                 return "사직 야구장";
             case "NC":
                 this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/NC_LOGO.png";
-                this.latitude = 35.2350;
-                this.longitude = 128.6826;
+                this.latitude = 35.22277;
+                this.longitude = 128.5828;
                 return "창원 NC파크";
             case "KT":
                 this.logoImg = "https://mymusinsabucket.s3.ap-northeast-2.amazonaws.com/KT_LOGO.png";
-                this.latitude = 37.2647;
-                this.longitude = 127.0086;
+                this.latitude = 37.29992;
+                this.longitude = 127.0102;
                 return "수원 KT 위즈 파크";
             default:
                 this.logoImg = "";
