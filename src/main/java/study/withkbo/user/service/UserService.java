@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import study.withkbo.exception.common.CommonError;
 import study.withkbo.exception.common.CommonException;
+import study.withkbo.team.repository.TeamRepository;
 import study.withkbo.user.dto.request.UserPasswordRequestDto;
 import study.withkbo.user.dto.request.UserSignUpRequestDto;
 import study.withkbo.user.dto.request.UserUpdateRequestDto;
@@ -20,6 +21,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TeamRepository teamRepository;
 
 
 
@@ -36,7 +38,7 @@ public class UserService {
                 .phone(requestDto.getPhone())
                 .address(requestDto.getAddress())
                 .profileImg(requestDto.getProfileImg())
-                .team(requestDto.getTeam()).build());
+                .team(teamRepository.findByTeamName(requestDto.getTeam())).build());
 
         return new UserResponseDto(user);
     }

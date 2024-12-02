@@ -29,13 +29,13 @@ public class PartyPostController {
     private final PartyPostService partyPostService;
 
     // 전체 글목록 페이지네이션 지원
-    @GetMapping("s")
+    @GetMapping("/s")
     public ApiResponseDto<PartyPostPageResponseDto> findPartyPosts(
             @RequestParam(defaultValue = "0") int page,  // 기본 페이지 번호는 0
             @RequestParam(defaultValue = "10") int size,  // 기본 페이지 크기는 10
             @RequestParam(value = "teamName", required = false) String teamName, // 팀이름
             @RequestParam(value = "gameId", required = false) Long gameId, // 게임 id
-            @RequestParam(value = "sortyBy", required = false) String[] sortBy, // 정렬 기준들
+            @RequestParam(value = "sortyBy", required = false, defaultValue = "") String[] sortBy, // 정렬 기준들
             @RequestParam(defaultValue = "false") boolean ascending // 기본은 내림차순
             ) {
 
@@ -111,6 +111,18 @@ public class PartyPostController {
         List<PartyPostMyPageResponseDto> result = partyPostService.findMyPostsByType(type, user);
 
         return ApiResponseDto.success(MessageType.RETRIEVE, result);
+    }
+
+    @GetMapping("")
+    public ApiResponseDto<?> getPartyPosts(@RequestParam(value = "teamName", required = false) String teamName,
+                                            @RequestParam(value = "gameId", required = false) Long gameId,
+                                            @RequestParam(value = "sortyBy", required = false, defaultValue = "") String[] sortBy,
+                                            @RequestParam(defaultValue = "true") boolean ascending ,
+                                           @RequestParam(value = "cursor", required = false) Long cursor
+    ){
+        //임시 test 코드
+        PartyPostPageResponseDto result = partyPostService.getPartyPostsWithCursor(teamName,gameId,cursor,5,sortBy, ascending);
+        return ApiResponseDto.success(MessageType.RETRIEVE,result);
     }
 
 }
