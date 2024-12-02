@@ -29,27 +29,21 @@ public class FriendService {
     private final FriendRepository friendRepository;
     private final UserRepository userRepository;
 
-    public FriendResponseDto sendFriendRequest(FriendRequestDto requestDto) {
+    public FriendResponseDto sendFriendRequest(FriendRequestDto requestDto, User user) {
 
-        friendRepository.findByFromUserIdAndToUserId(
-                requestDto.getToUserId(),
-                requestDto.getUserId()
-        ).ifPresent(
-                (exist) -> new CommonException(CommonError.FRIEND_REQUEST_ALREADY_SEND)
-        );
+       friendRepository.findByFromUserIdAndToUserId(user.getId(), requestDto.getToUserId())
+               .ifPresent(exist -> { new CommonException(CommonError.FRIEND_REQUEST_ALREADY_SEND); });
 
-        Friend sendRequest = friendRepository.save(
-                Friend.builder().fromUserId(requestDto.getUserId())
-                        .toUserId(requestDto.getToUserId())
-                        .state(State.SEND).build()
-        );
+       Friend friend = friendRepository.save(Friend.builder().fromUserId(user.getId()).toUserId(requestDto.getToUserId()).state(State.SEND).build());
 
-        return new FriendResponseDto(sendRequest);
+       return new FriendResponseDto(friend);
     }
 
     //페이징 나중에
-    public List<FriendResponseDto> getFriendList(String type, String username) {
+    public List<FriendResponseDto> getFriendList(String type, User user) {
         List<Friend> friendList = new ArrayList<>();
+
+        String username = user.getUsername();
 
         User targetUser = userRepository.findByUsername(username).orElseThrow(
                 ()->{ throw new CommonException(CommonError.USER_NOT_FOUND);}
@@ -77,12 +71,12 @@ public class FriendService {
     }
 
     @Transactional
-    public FriendResponseDto blockFriend(FriendRequestDto requestDto) {
-        User targetUser = userRepository.findById(requestDto.getUserId()).orElseThrow(
-                () -> { throw new CommonException(CommonError.USER_NOT_FOUND);}
-        );
+    public FriendResponseDto blockFriend(FriendRequestDto requestDto, User user) {
+        if (user == null) {
+            throw new CommonException(CommonError.USER_NOT_FOUND);
+        }
 
-        Friend targetFriend = checkFriend(requestDto,targetUser);
+        Friend targetFriend = checkFriend(requestDto,user);
 
         if(targetFriend.getState().equals(State.BLOCK)) {
             throw new CommonException(CommonError.FRIEND_ALREADY_BLOCK);
@@ -94,12 +88,13 @@ public class FriendService {
     }
 
     @Transactional
-    public FriendResponseDto acceptFriendRequest(FriendRequestDto requestDto, String accept) {
-        User targetUser = userRepository.findById(requestDto.getUserId()).orElseThrow(
-                () -> { throw new CommonException(CommonError.USER_NOT_FOUND);}
-        );
+    public FriendResponseDto acceptFriendRequest(FriendRequestDto requestDto, String accept, User user) {
 
-        Friend friend = checkFriend(requestDto,targetUser);
+        if(user == null) {
+            throw new CommonException(CommonError.USER_NOT_FOUND);
+        }
+
+        Friend friend = checkFriend(requestDto,user);
 
         if(!friend.getState().equals(State.SEND)) {
             throw new CommonException(CommonError.BAD_REQUEST);

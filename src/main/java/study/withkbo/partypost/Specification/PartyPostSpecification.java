@@ -73,4 +73,18 @@ public class PartyPostSpecification {
             return criteriaBuilder.equal(root.get("user"), user);
         };
     }
+
+
+    public static Specification<PartyPost> createdAfterCursor(Long cursor) {
+        return (root, query, criteriaBuilder) ->
+                cursor == null ? criteriaBuilder.conjunction()
+                        : criteriaBuilder.greaterThan(root.get("id"), cursor);
+
+    }
+
+    public static Specification<PartyPost> createdBeforeCursor(Long cursor) {
+        return (root, query, criteriaBuilder) ->
+                cursor == null ? criteriaBuilder.conjunction()
+                        : criteriaBuilder.lessThan(root.get("id"), cursor);
+    }
 }

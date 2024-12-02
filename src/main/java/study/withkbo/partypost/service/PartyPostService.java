@@ -34,4 +34,7 @@ public interface PartyPostService {
 
     // 메인에서 특정유저가 자기가 작성한 것만 가져와 조회하기
     PartyPostPageResponseDto getMyPosts(User user, int page, int size);
+
+    PartyPostPageResponseDto getPartyPostsWithCursor(String teamName, Long gameId, Long cursor, int size, String[] sortBy, boolean ascending);
 }
+

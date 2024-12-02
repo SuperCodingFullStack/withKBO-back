@@ -55,8 +55,9 @@ public class PartyPostServiceImpl implements PartyPostService {
 
     // 게시글 작성
 
-    @Override
+
     @Transactional
+    @Override
     public PartyPostWriteResponseDto createPost(PartyPostWriteRequestDto partyPostRequestDto, User user) {
 
         Game game = gameRepository.findById(partyPostRequestDto.getGameId())
@@ -136,15 +137,10 @@ public class PartyPostServiceImpl implements PartyPostService {
     @Transactional
     @Override
     public PartyPostPageResponseDto getPartyPosts(String teamName, Long gameId, int page, int size, String[] sortBy, boolean ascending) {
+
         // 페이지 번호와 크기 유효성 검사
         if (page < 0) page = 0;
         if (size < 1) size = 10;
-
-        // **sortBy가 null일 경우 빈 배열로 초기화**
-        if (sortBy == null) {
-            log.warn("sortBy is null. Initializing with an empty array.");
-            sortBy = new String[0]; // 빈 배열로 설정
-        }
 
         // 페이징 정보 생성
         Pageable pageable = PageRequest.of(page, size);
@@ -270,6 +266,57 @@ public class PartyPostServiceImpl implements PartyPostService {
                 partyPostPage.getSize()
         );
     }
+
+    @Override
+    public PartyPostPageResponseDto getPartyPostsWithCursor(
+            String teamName, Long gameId, Long cursor, int size, String[] sortBy, boolean ascending) {
+
+        // 페이지 크기 유효성 검사
+        if (size < 1) size = 10;
+
+        // Specification 동적으로 결합 (필터링 조건을 동적으로 설정)
+        Specification<PartyPost> spec = Specification.where(PartyPostSpecification.hasTeam(teamName))
+                .and(PartyPostSpecification.hasGame(gameId));
+
+        // 기본 정렬 조건 추가 (최신순 또는 오래된 순)
+        if (ascending) {
+            spec = spec.and(PartyPostSpecification.createdAfterCursor(cursor));
+        } else {
+            spec = spec.and(PartyPostSpecification.createdBeforeCursor(cursor));
+        }
+
+        // 추가 정렬 조건 처리
+        for (String sort : sortBy) {
+            switch (sort) {
+                case "hitCount":
+                    spec = spec.and(PartyPostSpecification.orderByHitCountDesc());
+                    break;
+                case "likeCount":
+                    spec = spec.and(PartyPostSpecification.orderByLikeCountDesc());
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // 데이터 조회 (커서 기반, 최대 size만큼 조회)
+        List<PartyPost> partyPosts = partyPostRepository.findAll(spec, PageRequest.of(0, size)).getContent();
+
+        // 게시글 목록을 PartyPostResponseDto로 변환
+        List<PartyPostResponseDto> partyPostResponseDtos = partyPosts.stream()
+                .map(PartyPostResponseDto::fromEntity)  // 엔티티를 DTO로 변환
+                .collect(Collectors.toList());
+
+        // 마지막 항목의 ID를 새로운 커서로 설정
+        Long nextCursor = partyPosts.isEmpty() ? null : partyPosts.get(partyPosts.size() - 1).getId();
+
+        // DTO 반환
+        return PartyPostPageResponseDto.fromPartyPostResponseDtoWithCursor(
+                partyPostResponseDtos,
+                nextCursor
+        );
+    }
+
 
 }
 

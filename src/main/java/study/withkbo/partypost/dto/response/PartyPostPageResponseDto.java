@@ -13,7 +13,13 @@ public class PartyPostPageResponseDto {
     private int totalPages;  // 총 페이지 수
     private long totalElements;  // 전체 요소 수
     private int currentPage;  // 현재 페이지
-    private int size;  // 페이지당 크기
+    private int size;// 페이지당 크기
+    private Long nextCursor;
+
+    public PartyPostPageResponseDto(List<PartyPostResponseDto> posts, Long nextCursor) {
+        this.partyPosts = posts;
+        this.nextCursor = nextCursor;
+    }
 
     // PartyPostPageResponseDto 객체를 생성하는 메서드
     public static PartyPostPageResponseDto fromPartyPostResponseDto(
@@ -31,4 +37,10 @@ public class PartyPostPageResponseDto {
                 .size(size)
                 .build();
     }
+
+    public static PartyPostPageResponseDto fromPartyPostResponseDtoWithCursor(
+            List<PartyPostResponseDto> posts, Long nextCursor) {
+        return new PartyPostPageResponseDto(posts, nextCursor);
+    }
+
 }

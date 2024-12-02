@@ -58,8 +58,8 @@ public class UserController {
 
     @PreAuthorize("hasAnyAuthority('ROLE_USER','ROLE_ADMIN')")
     @GetMapping("/password")
-    public ApiResponseDto<?> checkPassword( String password, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        userService.checkPassword(password, userDetails.getPassword());
+    public ApiResponseDto<?> checkPassword(String password, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        userService.checkPassword(password, userDetails.getUser().getPassword());
         return ApiResponseDto.success(MessageType.RETRIEVE, "비밀번호 확인이 완료 되었습니다.");
     }
 
