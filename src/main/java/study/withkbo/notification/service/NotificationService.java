@@ -1,8 +1,15 @@
 package study.withkbo.notification.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import study.withkbo.common.response.ApiResponseDto;
+import study.withkbo.common.response.MessageType;
+import study.withkbo.exception.common.CommonError;
+import study.withkbo.exception.common.CommonException;
+import study.withkbo.notification.dto.response.NotificationResponseDto;
 import study.withkbo.notification.dto.response.NotifyDto;
 import study.withkbo.notification.entity.Notification;
 import study.withkbo.notification.repository.EmitterRepository;
@@ -11,10 +18,13 @@ import study.withkbo.security.UserDetailsImpl;
 import study.withkbo.user.entity.User;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationService {
 
     private static final Long DEFAULT_TIMEOUT = 60 * 1000L * 60;
@@ -31,9 +41,9 @@ public class NotificationService {
         String eventId = makeTimeIncludeId(username);
         sendNotification(emitter,eventId,emitterId, "EventStream Created. [userName=" + username + "]");
 
-        //알림을 보낸 유저 객체 ,알림을 받을 상대방 유저 객체, 알림타입, 읽음여부, "내용", "요청 url"
-        this.send(user.getUser(), Notification.NotificationType.PARTY,
-                Notification.ReadStatus.UNREAD,"참가요청이 왔습니다.","/api/connect");
+//        알림을 보낸 유저 객체 ,알림을 받을 상대방 유저 객체, 알림타입, 읽음여부, "내용", "요청 url"
+//        this.send(user.getUser(), Notification.NotificationType.PARTY,
+//                Notification.ReadStatus.UNREAD,"참가요청이 왔습니다.","/api/connect");
 
         if(hasLostData(lastEventId)){
             sendLostData(lastEventId, username, emitterId, emitter);
@@ -67,8 +77,8 @@ public class NotificationService {
         return username + "_" + System.currentTimeMillis();
     }
 
-    public void send(User sender, Notification.NotificationType notificationType, Notification.ReadStatus readStatus,String content, String url) {
-        Notification notification = notifyRepository.save(createNotification(sender, notificationType, readStatus,content, url));
+    public void send(User sender,User receiver, Notification.NotificationType notificationType, Notification.ReadStatus readStatus,String content, String url) {
+        Notification notification = notifyRepository.save(createNotification(sender,receiver, notificationType, readStatus,content, url));
 
         String receiverUserName = sender.getUsername();
         String eventId = receiverUserName + "_" + System.currentTimeMillis();
@@ -81,14 +91,28 @@ public class NotificationService {
         );
     }
 
-    private Notification createNotification(User sender, Notification.NotificationType notificationType,
+    private Notification createNotification(User sender,User receiver, Notification.NotificationType notificationType,
                                             Notification.ReadStatus readStatus, String content, String url) {
         return Notification.builder()
                 .sender(sender)
+                .receiver(receiver)
                 .notificationType(notificationType)
                 .content(content)
                 .url(url)
                 .readStatus(readStatus)
                 .build();
+    }
+
+    public List<NotificationResponseDto> selectNotification(Long id) {
+        List<Notification> notificationList = notifyRepository.findByReceiverIdAndReadStatus(id, Notification.ReadStatus.UNREAD);
+        return notificationList.stream().map(NotificationResponseDto::new).toList();
+    }
+
+    @Transactional
+    public void notificationTypeUpdate(Long notificationId, Long id) {
+        Notification notification = notifyRepository.findByIdAndReceiverId(notificationId,id)
+                .orElseThrow(() -> new CommonException(CommonError.NOTIFICATION_NOT_FOUND));
+
+        notification.setReadStatus(Notification.ReadStatus.READ);
     }
 }

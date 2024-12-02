@@ -28,6 +28,9 @@ public enum CommonError {
     //팀 - 코드 접두사(T)
     NO_TEAM_INFO(HttpStatus.BAD_REQUEST, "T-001","해당 팀 정보가 없습니다."),
 
+    //알림 - 코드 접두사(N)
+    NOTIFICATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "N-001","해당 알림이 비어 있습니다."),
+
     //파티 - 코드접두사(P)
     PARTY_REQUEST_AlREADY_SEND(HttpStatus.BAD_REQUEST, "P-001","참가 신청을 이미 완료한 파티입니다."),
     PARTY_NOT_FOUND(HttpStatus.NOT_FOUND,"P-002","해당하는 파티가 존재하지 않습니다."),

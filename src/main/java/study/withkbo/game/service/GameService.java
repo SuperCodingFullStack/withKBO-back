@@ -42,6 +42,12 @@ public class GameService {
     public List<GameInfoResponseDto> selectGameInfo(String month) {
         List<Game> gamesSearchMonth;
 
+        gamesSearchMonth = gameRepository.findByMatchDateStartingWith(month);
+
+        if (!gamesSearchMonth.isEmpty()) {
+            return gamesSearchMonth.stream().map(GameInfoResponseDto::new).toList();
+        }
+
         try {
             Element doc = gameInfoCrawling(month);
             Elements gameInfo = doc.select("#scheduleList tr");
@@ -50,16 +56,17 @@ public class GameService {
             gameInfoToEntity(gameInfo, teamMap);
 
         } catch (Exception e) {
+            log.error("게임 정보 크롤링 중 오류 발생: {}", e.getMessage());
             throw new CommonException(CommonError.INTERNAL_SERVER_ERROR);
         }
 
         gamesSearchMonth = gameRepository.findByMatchDateStartingWith(month);
 
-        if (gamesSearchMonth != null && !gamesSearchMonth.isEmpty()) {
-            return gamesSearchMonth.stream().map(GameInfoResponseDto::new).collect(Collectors.toList());
-        } else {
+        if (gamesSearchMonth.isEmpty()) {
             throw new CommonException(CommonError.GAME_NOT_FOUND);
         }
+
+        return gamesSearchMonth.stream().map(GameInfoResponseDto::new).collect(Collectors.toList());
     }
 
     public Document gameInfoCrawling(String month) {
@@ -144,7 +151,7 @@ public class GameService {
         if (games.isEmpty()) {
             throw new CommonException(CommonError.GAME_NOT_FOUND);
         }
-        return games.stream().map(GameResponseDto::new).collect(Collectors.toList());
+        return games.stream().map(GameResponseDto::new).toList();
     }
 
     private String gameMatchDateParser(String matchDate) {
