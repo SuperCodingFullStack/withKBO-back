@@ -5,6 +5,7 @@ import lombok.*;
 import study.withkbo.comment.entity.Comment;
 import study.withkbo.common.BaseTime;
 import study.withkbo.game.entity.Game;
+import study.withkbo.like.entity.Like;
 import study.withkbo.partypost.dto.request.PartyPostUpdateRequestDto;
 import study.withkbo.user.entity.User;
 
@@ -49,6 +50,10 @@ public class PartyPost  extends BaseTime {
 
     @Column(nullable = false, name = "like_count")
     private Integer likeCount = 0;  // 기본값을 0으로 설정  // 좋아요 개수 결국 이것도 해당글을 x명이 좋아합니다 표현해야함
+
+    @OneToMany(mappedBy = "partyPost", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Like> likes = new ArrayList<>(); // 이 게시글을 좋아요를 유저들과의 연동
 
     @Column(nullable = false, name = "hit_count")
     private Integer hitCount = 0;  // 기본값을 0으로 설정

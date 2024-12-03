@@ -1,16 +1,13 @@
 package study.withkbo.friend.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import study.withkbo.common.response.ApiResponseDto;
 import study.withkbo.common.response.MessageType;
 import study.withkbo.friend.dto.request.FriendRequestDto;
 import study.withkbo.friend.dto.response.FriendResponseDto;
-import study.withkbo.friend.entity.Friend;
 import study.withkbo.friend.service.FriendService;
 import study.withkbo.security.UserDetailsImpl;
 import study.withkbo.user.entity.User;

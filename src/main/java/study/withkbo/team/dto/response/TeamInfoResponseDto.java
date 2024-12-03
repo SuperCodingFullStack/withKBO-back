@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import study.withkbo.team.entity.Team;
 
+import java.math.BigDecimal;
+
 @Getter
 @Builder
 @NoArgsConstructor
@@ -23,8 +25,8 @@ public class TeamInfoResponseDto {
     private String consecutive;
     private String last10Games;
     private String stadium;
-    private Double latitude;
-    private Double longitude;
+    private BigDecimal latitude;
+    private BigDecimal longitude;
 
     public TeamInfoResponseDto(Team team){
         this.teamId = team.getId();

@@ -39,6 +39,7 @@ public class PartyPostResponseDto {
     private String opposingTeam;//  상대팀 이미지 가져오기 위한 팀이름
     private String matchDate; // 경기 일정 (예: "2024-12-31"?)
     private String matchTime; // 경기 시간 (18:00)? 인건가?
+    private String stadium; // 경기하는 구장 이름 가져오기
 
     // 참여버튼 관련
     private Integer maxPeopleNum; // 최대 참여 인원
@@ -64,6 +65,7 @@ public class PartyPostResponseDto {
                 .likeCount(partyPost.getLikeCount()) // 좋아요 수
                 .hitCount(partyPost.getHitCount()) // 조회수
                 .createAt(partyPost.getCreatedDate().toString()) // 작성 일시
+                .stadium(partyPost.getGame().getTeam().getStadium())// 경기장
                 .build();
     }
 }

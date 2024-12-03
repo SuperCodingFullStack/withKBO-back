@@ -1,7 +1,5 @@
 package study.withkbo.partypost.service;
 
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,10 +22,6 @@ import study.withkbo.partypost.dto.response.*;
 import study.withkbo.partypost.entity.PartyPost;
 import study.withkbo.partypost.repository.PartyPostRepository;
 import study.withkbo.user.entity.User;
-import study.withkbo.user.entity.UserRoleEnum;
-
-
-import java.util.Arrays;
 import java.util.List;
 
 import java.util.stream.Collectors;
@@ -117,11 +111,16 @@ public class PartyPostServiceImpl implements PartyPostService {
     @Transactional
     public PartyPostDeleteResponseDto deletePartyPost(Long id, User user) {
 
+        PartyPost deletePartyPost = partyPostRepository.findById(id)
+                .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
+        // 작성자가 현재 로그인한 사용자와 일치하는지 확인
+        if (!deletePartyPost.getUser().getId().equals(user.getId())) {
+            throw new CommonException(CommonError.FORBIDDEN);
+        }
+
         // 먼저 Hit 테이블에서 해당 partyPostId에 관련된 데이터를 삭제
         hitRepository.deleteByPartyPostId(id);
 
-        PartyPost deletePartyPost = partyPostRepository.findById(id)
-                .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
 
 
         partyPostRepository.delete(deletePartyPost);
@@ -205,6 +204,7 @@ public class PartyPostServiceImpl implements PartyPostService {
         };
     }
 
+    // 좋아요 누른 글들만 조회
     @Transactional
     @Override
     public PartyPostPageResponseDto getLikedPosts(User user, int page, int size) {
@@ -236,6 +236,8 @@ public class PartyPostServiceImpl implements PartyPostService {
         );
     }
 
+    
+    // 내가 작성한 글들만 조회
     @Transactional
     @Override
     public PartyPostPageResponseDto getMyPosts(User user, int page, int size) {
