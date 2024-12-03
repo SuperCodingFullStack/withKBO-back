@@ -4,6 +4,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import study.withkbo.exception.common.CommonError;
 import study.withkbo.exception.common.CommonException;
 import study.withkbo.user.dto.request.UserPasswordRequestDto;
@@ -13,6 +18,7 @@ import study.withkbo.user.dto.response.UserResponseDto;
 import study.withkbo.user.entity.User;
 import study.withkbo.user.repository.UserRepository;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -20,6 +26,8 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final S3Client s3Client;
+    private final String bucketName;
 
 
 

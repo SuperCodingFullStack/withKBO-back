@@ -5,25 +5,26 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import study.withkbo.common.response.ApiResponseDto;
 import study.withkbo.common.response.MessageType;
 import study.withkbo.jwt.JwtUtil;
 import study.withkbo.security.JwtAuthenticationFilter;
 import study.withkbo.security.UserDetailsImpl;
-import study.withkbo.user.dto.request.UserLoginRequestDto;
-import study.withkbo.user.dto.request.UserPasswordRequestDto;
-import study.withkbo.user.dto.request.UserSignUpRequestDto;
-import study.withkbo.user.dto.request.UserUpdateRequestDto;
+import study.withkbo.user.dto.request.*;
 import study.withkbo.user.dto.response.UserResponseDto;
 import study.withkbo.user.entity.User;
 import study.withkbo.user.service.KakaoService;
 import study.withkbo.user.service.UserService;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.sql.Blob;
 import java.util.List;
 
 
