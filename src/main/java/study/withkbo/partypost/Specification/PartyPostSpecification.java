@@ -7,6 +7,8 @@ import org.springframework.util.StringUtils;
 import study.withkbo.like.entity.Like;
 import study.withkbo.partypost.entity.PartyPost;
 import study.withkbo.user.entity.User;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 public class PartyPostSpecification {
 
@@ -74,17 +76,19 @@ public class PartyPostSpecification {
         };
     }
 
-
-    public static Specification<PartyPost> createdAfterCursor(Long cursor) {
+    // ID 기반 필터링 (커서보다 큰 ID로 필터링)
+    public static Specification<PartyPost> idAfterCursor(Long cursor) {
         return (root, query, criteriaBuilder) ->
                 cursor == null ? criteriaBuilder.conjunction()
-                        : criteriaBuilder.greaterThan(root.get("id"), cursor);
-
+                        : criteriaBuilder.greaterThan(root.get("id"), cursor); // 커서가 ID 기반으로 변경됨
     }
 
-    public static Specification<PartyPost> createdBeforeCursor(Long cursor) {
+    // ID 기반 필터링 (커서보다 작은 ID로 필터링)
+    public static Specification<PartyPost> idBeforeCursor(Long cursor) {
         return (root, query, criteriaBuilder) ->
                 cursor == null ? criteriaBuilder.conjunction()
-                        : criteriaBuilder.lessThan(root.get("id"), cursor);
+                        : criteriaBuilder.lessThan(root.get("id"), cursor); // 커서가 ID 기반으로 변경됨
     }
+
+    // 추가적인 수정사항이 필요하다면 주석을 통해 기입해주세요.
 }

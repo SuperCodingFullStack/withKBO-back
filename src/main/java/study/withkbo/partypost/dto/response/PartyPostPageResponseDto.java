@@ -6,41 +6,20 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class PartyPostPageResponseDto {
     private List<PartyPostResponseDto> partyPosts;  // 게시글 목록
-    private int totalPages;  // 총 페이지 수
-    private long totalElements;  // 전체 요소 수
-    private int currentPage;  // 현재 페이지
-    private int size;// 페이지당 크기
-    private Long nextCursor;
+    private Long nextCursor;  // 다음 커서
 
     public PartyPostPageResponseDto(List<PartyPostResponseDto> posts, Long nextCursor) {
         this.partyPosts = posts;
         this.nextCursor = nextCursor;
     }
 
-    // PartyPostPageResponseDto 객체를 생성하는 메서드
-    public static PartyPostPageResponseDto fromPartyPostResponseDto(
-            List<PartyPostResponseDto> partyPostResponseList,
-            int totalPages,
-            long totalElements,
-            int currentPage,
-            int size) {
-
-        return PartyPostPageResponseDto.builder()
-                .partyPosts(partyPostResponseList)
-                .totalPages(totalPages)
-                .totalElements(totalElements)
-                .currentPage(currentPage)
-                .size(size)
-                .build();
-    }
-
+    // 커서 기반 응답을 생성하는 메서드
     public static PartyPostPageResponseDto fromPartyPostResponseDtoWithCursor(
-            List<PartyPostResponseDto> posts, Long nextCursor) {
-        return new PartyPostPageResponseDto(posts, nextCursor);
+            List<PartyPostResponseDto> partyPostResponseList,
+            Long nextCursor) {
+        return new PartyPostPageResponseDto(partyPostResponseList, nextCursor);
     }
-
 }

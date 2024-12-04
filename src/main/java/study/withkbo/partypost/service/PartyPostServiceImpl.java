@@ -2,9 +2,9 @@ package study.withkbo.partypost.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,38 +22,49 @@ import study.withkbo.partypost.dto.response.*;
 import study.withkbo.partypost.entity.PartyPost;
 import study.withkbo.partypost.repository.PartyPostRepository;
 import study.withkbo.user.entity.User;
-import java.util.List;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 파티 게시글 서비스를 구현한 클래스
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class PartyPostServiceImpl implements PartyPostService {
 
-    private final PartyPostRepository partyPostRepository;
-    private final GameRepository gameRepository;
-    private final LikeRepository likeRepository;
-    private final HitRepository hitRepository;
+    private final PartyPostRepository partyPostRepository; // 파티 게시글 레포지토리
+    private final GameRepository gameRepository;           // 게임 레포지토리
+    private final LikeRepository likeRepository;           // 좋아요 레포지토리
+    private final HitRepository hitRepository;             // 조회수 레포지토리
 
-    //    @Operation("게시글 아이디로 상세게시글 가져오기")
+    /**
+     * 게시글 ID를 통해 특정 게시글을 조회
+     *
+     * @param id 게시글 ID
+     * @return 조회한 게시글 정보
+     */
     @Transactional
     @Override
     public PostResponseDto getPartyPostById(Long id) {
         PartyPost partyPost = partyPostRepository.findById(id)
                 .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
-      log.info("getPartyPostById: {}", partyPost);
-
-        return PostResponseDto.fromEntity(partyPost);  // 엔티티를 DTO로 변환하여 반환
+        log.info("getPartyPostById: {}", partyPost);
+        return PostResponseDto.fromEntity(partyPost);
     }
 
-    // 게시글 작성
-
-
+    /**
+     * 새로운 게시글 생성
+     *
+     * @param partyPostRequestDto 게시글 생성 요청 데이터
+     * @param user                게시글 작성자
+     * @return 생성된 게시글의 ID
+     */
     @Transactional
     @Override
     public PartyPostWriteResponseDto createPost(PartyPostWriteRequestDto partyPostRequestDto, User user) {
-
         Game game = gameRepository.findById(partyPostRequestDto.getGameId())
                 .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
 
@@ -63,42 +74,45 @@ public class PartyPostServiceImpl implements PartyPostService {
                 .title(partyPostRequestDto.getTitle())
                 .content(partyPostRequestDto.getContent())
                 .maxPeopleNum(partyPostRequestDto.getMaxPeopleNum())
-                .currentPeopleNum(1)  // 기본값: 1명
-                .likeCount(0)
-                .hitCount(0)
-                .postState(true)
+                .currentPeopleNum(1) // 기본 생성 시 참가자는 1명
+                .likeCount(0) // 초기 좋아요 수
+                .hitCount(0) // 초기 조회 수
+                .postState(true) // 게시글 활성화 상태
                 .build();
 
-        partyPostRepository.save(partyPost);
+        partyPostRepository.save(partyPost); // 게시글 저장
         return PartyPostWriteResponseDto.builder()
-                .id(partyPost.getId())
+                .id(partyPost.getId()) // 생성된 게시글 ID 반환
                 .build();
     }
 
-    // 글을 수정하는 것
+    /**
+     * 게시글 수정
+     *
+     * @param id         수정할 게시글 ID
+     * @param user       수정 요청한 사용자
+     * @param updateDto  수정 요청 데이터
+     * @return 수정된 게시글의 ID
+     */
     @Transactional
     @Override
     public PartyPostUpdateResponseDto updatePartyPost(Long id, User user, PartyPostUpdateRequestDto updateDto) {
-
-        // 게시물 아이디로 조회
         PartyPost post = partyPostRepository.findById(id)
                 .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
 
-        // 작성자가 현재 로그인한 사용자와 일치하는지 확인
+        // 게시글 작성자와 수정 요청자가 일치하지 않을 경우 예외 처리
         if (!post.getUser().getId().equals(user.getId())) {
             throw new CommonException(CommonError.FORBIDDEN);
         }
 
+        // 게임 정보 수정
         Game game = post.getGame();
-
-
-        // 경기 정보 수정
         if (!game.getId().equals(updateDto.getGameId())) {
             game = gameRepository.findById(updateDto.getGameId())
                     .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
         }
 
-        // 기존 post를 기반으로 새로운 인스턴스 생성
+        // 수정된 정보로 게시글 업데이트
         PartyPost updatedPost = post.toBuilderWithUpdates(game, updateDto);
         partyPostRepository.save(updatedPost);
         return PartyPostUpdateResponseDto.builder()
@@ -106,90 +120,87 @@ public class PartyPostServiceImpl implements PartyPostService {
                 .build();
     }
 
-    // 글을 삭제하는 것
+    /**
+     * 게시글 삭제
+     *
+     * @param id   삭제할 게시글 ID
+     * @param user 삭제 요청한 사용자
+     * @return 삭제된 게시글의 ID
+     */
     @Override
     @Transactional
     public PartyPostDeleteResponseDto deletePartyPost(Long id, User user) {
-
         PartyPost deletePartyPost = partyPostRepository.findById(id)
                 .orElseThrow(() -> new CommonException(CommonError.NOT_FOUND));
-        // 작성자가 현재 로그인한 사용자와 일치하는지 확인
+
+        // 게시글 작성자와 삭제 요청자가 일치하지 않을 경우 예외 처리
         if (!deletePartyPost.getUser().getId().equals(user.getId())) {
             throw new CommonException(CommonError.FORBIDDEN);
         }
 
-        // 먼저 Hit 테이블에서 해당 partyPostId에 관련된 데이터를 삭제
+        // 관련 조회수 기록 삭제
         hitRepository.deleteByPartyPostId(id);
-
-
-
-        partyPostRepository.delete(deletePartyPost);
+        partyPostRepository.delete(deletePartyPost); // 게시글 삭제
         return PartyPostDeleteResponseDto.builder()
                 .id(deletePartyPost.getId())
                 .build();
     }
 
-
-
-
-    // 페이지네이션에 따른 조건 조회
+    /**
+     * 커서 기반 페이징으로 게시글 목록 조회
+     *
+     * @param teamName  팀 이름 필터
+     * @param gameId    게임 ID 필터
+     * @param cursor    페이징 커서
+     * @param size      페이지 크기
+     * @param sortBy    정렬 기준
+     * @param ascending 오름차순 여부
+     * @return 게시글 목록 및 다음 커서
+     */
     @Transactional
     @Override
-    public PartyPostPageResponseDto getPartyPosts(String teamName, Long gameId, int page, int size, String[] sortBy, boolean ascending) {
+    public PartyPostPageResponseDto getPartyPostsWithCursor(String teamName, Long gameId, Long cursor, int size, String[] sortBy, boolean ascending) {
+        if (size < 1) size = 10; // 기본 페이지 크기 설정
 
-        // 페이지 번호와 크기 유효성 검사
-        if (page < 0) page = 0;
-        if (size < 1) size = 10;
+        Sort sort = Sort.by(sortBy); // 정렬 조건 생성
+        sort = ascending ? sort.ascending() : sort.descending();
+        Pageable pageable = PageRequest.of(0, size, sort);
 
-        // 페이징 정보 생성
-        Pageable pageable = PageRequest.of(page, size);
+        // 검색 조건 설정
+        Specification<PartyPost> spec = PartyPostSpecification.hasGame(gameId)
+                .and(PartyPostSpecification.hasTeam(teamName));
 
-        // Specification 동적으로 결합 (필터링 조건을 동적으로 설정)
-        Specification<PartyPost> spec = Specification.where(PartyPostSpecification.hasTeam(teamName))
-                .and(PartyPostSpecification.hasGame(gameId));
-
-        // 정렬 조건 추가 (최신순 작성순으로 최우선 정렬)
-        spec = spec.and(ascending
-                ? PartyPostSpecification.orderByCreatedAtAsc()
-                : PartyPostSpecification.orderByCreatedAtDesc());
-
-        // 동적으로 정렬 기준 추가
-        for (String sort : sortBy) { // sortBy가 null이면 이 부분에서 NullPointerException 발생
-            switch (sort) {
-                case "hitCount":
-                    spec = spec.and(PartyPostSpecification.orderByHitCountDesc());
-                    break;
-                case "likeCount":
-                    spec = spec.and(PartyPostSpecification.orderByLikeCountDesc());
-                    break;
-                default:
-                    break;
-            }
+        if (cursor != null) {
+            spec = spec.and(PartyPostSpecification.idAfterCursor(cursor));
         }
 
-        // Specification Pageable 사용하여 데이터 조회
-        Page<PartyPost> partyPostPage = partyPostRepository.findAll(spec, pageable);
+        // 페이징 및 검색 조건에 맞는 게시글 조회
+        List<PartyPost> partyPosts = partyPostRepository.findAll(spec, pageable).getContent();
 
-        // 게시글 목록을 PartyPostResponseDto로 변환
-        List<PartyPostResponseDto> partyPostResponseDtos = partyPostPage.getContent().stream()
-                .map(PartyPostResponseDto::fromEntity)  // 엔티티를 DTO로 변환
+        List<PartyPostResponseDto> partyPostResponseDtos = partyPosts.stream()
+                .map(PartyPostResponseDto::fromEntity)
                 .collect(Collectors.toList());
 
-        // 페이지네이션 정보와 게시글 목록을 DTO로 반환
-        return PartyPostPageResponseDto.fromPartyPostResponseDto(
+        // 다음 커서 설정
+        Long nextCursor = partyPosts.isEmpty() ? null : partyPosts.get(partyPosts.size() - 1).getId();
+
+        return PartyPostPageResponseDto.fromPartyPostResponseDtoWithCursor(
                 partyPostResponseDtos,
-                partyPostPage.getTotalPages(),
-                partyPostPage.getTotalElements(),
-                partyPostPage.getNumber(),
-                partyPostPage.getSize()
+                nextCursor
         );
     }
 
-    // 조건에 따라 자기가 작성한 글 또는 자기가 좋아요한 글들을 가져옴
+    /**
+     * 조건에 따라 자기가 작성한 글 또는 좋아요한 글 조회
+     *
+     * @param type 조회 타입 (written/liked)
+     * @param user 사용자
+     * @return 조회 결과 목록
+     */
     @Override
+    @Transactional
     public List<PartyPostMyPageResponseDto> findMyPostsByType(String type, User user) {
-
-        return  switch (type) {
+        return switch (type) {
             case "written" -> // 작성한 게시글 조회
                     partyPostRepository.findByUser(user).stream()
                             .map(PartyPostMyPageResponseDto::fromEntity)
@@ -204,109 +215,51 @@ public class PartyPostServiceImpl implements PartyPostService {
         };
     }
 
-    // 좋아요 누른 글들만 조회
+    /**
+     * 좋아요 누른 글들만 조회
+     *
+     * @param user      사용자
+     * @param teamName  팀 이름 필터
+     * @param gameId    게임 ID 필터
+     * @param sortBy    정렬 기준
+     * @param ascending 정렬 방향 (오름차순/내림차순)
+     * @param cursor    커서
+     * @param size      페이지 크기
+     * @return 페이징된 게시글 목록
+     */
     @Transactional
     @Override
-    public PartyPostPageResponseDto getLikedPosts(User user, int page, int size) {
-        // 페이지 번호와 크기 유효성 검사
-        if (page < 0) page = 0;
-        if (size < 1) size = 10;
+    public PartyPostPageResponseDto getLikedPosts(User user, String teamName, Long gameId, String[] sortBy, boolean ascending, Long cursor, int size) {
+        // 페이지 크기 유효성 검사
+        if (size < 1) size = 5;  // 기본 페이지 크기 설정
 
-        // Pageable 생성
-        Pageable pageable = PageRequest.of(page, size);
+        // Pageable 생성, 정렬 기준을 sortBy 파라미터로 지정
+        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(0, size, sort);
 
         // 좋아요를 누른 게시글만 조회하는 Specification 생성
         Specification<PartyPost> spec = PartyPostSpecification.hasLikedByUser(user);
 
-        // 데이터 조회
-        Page<PartyPost> partyPostPage = partyPostRepository.findAll(spec, pageable);
-
-        // DTO 변환
-        List<PartyPostResponseDto> partyPostResponseDtos = partyPostPage.getContent().stream()
-                .map(PartyPostResponseDto::fromEntity)
-                .collect(Collectors.toList());
-
-        // 페이지네이션 정보와 DTO 반환
-        return PartyPostPageResponseDto.fromPartyPostResponseDto(
-                partyPostResponseDtos,
-                partyPostPage.getTotalPages(),
-                partyPostPage.getTotalElements(),
-                partyPostPage.getNumber(),
-                partyPostPage.getSize()
-        );
-    }
-
-    
-    // 내가 작성한 글들만 조회
-    @Transactional
-    @Override
-    public PartyPostPageResponseDto getMyPosts(User user, int page, int size) {
-        // 페이지 번호와 크기 유효성 검사
-        if (page < 0) page = 0;
-        if (size < 1) size = 10;
-
-        // Pageable 생성
-        Pageable pageable = PageRequest.of(page, size);
-
-        // 사용자 ID를 기반으로 필터링하는 Specification 호출
-        Specification<PartyPost> spec = PartyPostSpecification.hasPostsByUser(user);
-
-        // 데이터 조회
-        Page<PartyPost> partyPostPage = partyPostRepository.findAll(spec, pageable);
-
-        // DTO 변환
-        List<PartyPostResponseDto> partyPostResponseDtos = partyPostPage.getContent().stream()
-                .map(PartyPostResponseDto::fromEntity)
-                .collect(Collectors.toList());
-
-        // 페이지네이션 정보와 DTO 반환
-        return PartyPostPageResponseDto.fromPartyPostResponseDto(
-                partyPostResponseDtos,
-                partyPostPage.getTotalPages(),
-                partyPostPage.getTotalElements(),
-                partyPostPage.getNumber(),
-                partyPostPage.getSize()
-        );
-    }
-
-    @Override
-    public PartyPostPageResponseDto getPartyPostsWithCursor(
-            String teamName, Long gameId, Long cursor, int size, String[] sortBy, boolean ascending) {
-
-        // 페이지 크기 유효성 검사
-        if (size < 1) size = 10;
-
-        // Specification 동적으로 결합 (필터링 조건을 동적으로 설정)
-        Specification<PartyPost> spec = Specification.where(PartyPostSpecification.hasTeam(teamName))
-                .and(PartyPostSpecification.hasGame(gameId));
-
-        // 기본 정렬 조건 추가 (최신순 또는 오래된 순)
-        if (ascending) {
-            spec = spec.and(PartyPostSpecification.createdAfterCursor(cursor));
-        } else {
-            spec = spec.and(PartyPostSpecification.createdBeforeCursor(cursor));
+        // 커서 기반 정렬 추가
+        if (cursor != null) {
+            spec = spec.and(PartyPostSpecification.idAfterCursor(cursor));
         }
 
-        // 추가 정렬 조건 처리
-        for (String sort : sortBy) {
-            switch (sort) {
-                case "hitCount":
-                    spec = spec.and(PartyPostSpecification.orderByHitCountDesc());
-                    break;
-                case "likeCount":
-                    spec = spec.and(PartyPostSpecification.orderByLikeCountDesc());
-                    break;
-                default:
-                    break;
-            }
+        // 팀 이름이나 게임 ID로 추가 필터링
+        if (gameId != null) {
+            spec = spec.and(PartyPostSpecification.hasGame(gameId));
         }
 
-        // 데이터 조회 (커서 기반, 최대 size만큼 조회)
-        List<PartyPost> partyPosts = partyPostRepository.findAll(spec, PageRequest.of(0, size)).getContent();
+        if (teamName != null) {
+            spec = spec.and(PartyPostSpecification.hasTeam(teamName));
+        }
 
-        // 게시글 목록을 PartyPostResponseDto로 변환
+        // 데이터 조회
+        List<PartyPost> partyPosts = partyPostRepository.findAll(spec, pageable).getContent();
+
+        // DTO 변환
         List<PartyPostResponseDto> partyPostResponseDtos = partyPosts.stream()
-                .map(PartyPostResponseDto::fromEntity)  // 엔티티를 DTO로 변환
+                .map(PartyPostResponseDto::fromEntity)
                 .collect(Collectors.toList());
 
         // 마지막 항목의 ID를 새로운 커서로 설정
@@ -319,6 +272,60 @@ public class PartyPostServiceImpl implements PartyPostService {
         );
     }
 
+    /**
+     * 내가 작성한 글들만 조회
+     *
+     * @param user      사용자
+     * @param teamName  팀 이름 필터
+     * @param gameId    게임 ID 필터
+     * @param sortBy    정렬 기준
+     * @param ascending 정렬 방향 (오름차순/내림차순)
+     * @param cursor    커서
+     * @param size      페이지 크기
+     * @return 페이징된 게시글 목록
+     */
+    @Transactional
+    @Override
+    public PartyPostPageResponseDto getMyPostsWithCursor(User user, String teamName, Long gameId, String[] sortBy, boolean ascending, Long cursor, int size) {
+        // 페이지 크기 유효성 검사
+        if (size < 1) size = 5;  // 기본 페이지 크기 설정
 
+        // Pageable 생성, 정렬 기준을 sortBy 파라미터로 설정
+        Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(0, size, sort);
+
+        // 사용자가 작성한 글만 조회하는 Specification 생성
+        Specification<PartyPost> spec = PartyPostSpecification.hasPostsByUser(user);
+
+        // 커서 기반 정렬 추가
+        if (cursor != null) {
+            spec = spec.and(PartyPostSpecification.idAfterCursor(cursor));
+        }
+
+        // 팀 이름이나 게임 ID로 추가 필터링
+        if (gameId != null) {
+            spec = spec.and(PartyPostSpecification.hasGame(gameId));
+        }
+        if (teamName != null) {
+            spec = spec.and(PartyPostSpecification.hasTeam(teamName));
+        }
+
+        // 데이터 조회
+        List<PartyPost> partyPosts = partyPostRepository.findAll(spec, pageable).getContent();
+
+        // DTO 변환
+        List<PartyPostResponseDto> partyPostResponseDtos = partyPosts.stream()
+                .map(PartyPostResponseDto::fromEntity)
+                .collect(Collectors.toList());
+
+        // 마지막 항목의 ID를 새로운 커서로 설정
+        Long nextCursor = partyPosts.isEmpty() ? null : partyPosts.get(partyPosts.size() - 1).getId();
+
+        // DTO 반환
+        return PartyPostPageResponseDto.fromPartyPostResponseDtoWithCursor(
+                partyPostResponseDtos,
+                nextCursor
+        );
+    }
 }
 
