@@ -1,24 +1,17 @@
 package study.withkbo.party.service;
 
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import study.withkbo.exception.common.CommonError;
 import study.withkbo.exception.common.CommonException;
-import study.withkbo.jwt.JwtUtil;
 import study.withkbo.party.dto.response.PartyCreateResponseDto;
 import study.withkbo.party.dto.response.PartyListResponseDto;
 import study.withkbo.party.entity.Party;
 import study.withkbo.party.repository.PartyRepository;
 import study.withkbo.partypost.entity.PartyPost;
 import study.withkbo.user.entity.User;
-import study.withkbo.user.repository.UserRepository;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

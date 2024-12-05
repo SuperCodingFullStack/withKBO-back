@@ -21,7 +21,6 @@ public interface PartyPostRepository extends JpaRepository<PartyPost, Long> {
     // Specification을 사용하여 동적 쿼리와 페이징을 처리
     Page<PartyPost> findAll(Specification<PartyPost> spec, Pageable pageable);
 
-
     List<PartyPost> findByUser(User user);
 
 }

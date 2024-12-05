@@ -1,13 +1,9 @@
 package study.withkbo.friend.service;
 
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.checkerframework.checker.units.qual.C;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import study.withkbo.common.response.MessageType;
 import study.withkbo.exception.common.CommonError;
 import study.withkbo.exception.common.CommonException;
 import study.withkbo.friend.dto.request.FriendRequestDto;
@@ -15,7 +11,6 @@ import study.withkbo.friend.dto.response.FriendResponseDto;
 import study.withkbo.friend.entity.Friend;
 import study.withkbo.friend.entity.State;
 import study.withkbo.friend.repository.FriendRepository;
-import study.withkbo.jwt.JwtUtil;
 import study.withkbo.user.entity.User;
 import study.withkbo.user.repository.UserRepository;
 

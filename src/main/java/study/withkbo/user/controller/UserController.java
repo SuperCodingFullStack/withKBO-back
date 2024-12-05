@@ -36,6 +36,13 @@ public class UserController {
     private final UserService userService;
     private final KakaoService kakaoService;
 
+    // 유저 정보 가져오기
+
+    @GetMapping("")
+    public ApiResponseDto<UserResponseDto>getUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user =userDetails.getUser();
+        return ApiResponseDto.success(MessageType.RETRIEVE, new UserResponseDto(user));
+    }
 
     //없어도 되는 메소드지만 스웨거 상 사용하려고 만들어놨습니다.
     @PostMapping("/login")

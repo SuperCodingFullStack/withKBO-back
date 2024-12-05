@@ -47,7 +47,7 @@ public class UserService {
                 .phone(requestDto.getPhone())
                 .address(requestDto.getAddress())
                 .profileImg(requestDto.getProfileImg())
-                .team(requestDto.getTeam()).build());
+                .team(teamRepository.findByTeamName(requestDto.getTeam())).build());
 
         return new UserResponseDto(user);
     }
@@ -90,6 +90,7 @@ public class UserService {
         return new UserResponseDto(userRepository.save(user));
     }
 
+    // 이미지? 구현
     public String uploadImage(MultipartFile image) {
         if(image.isEmpty() || Objects.isNull(image.getOriginalFilename())) {
             throw new CommonException(CommonError.NOT_FOUND);

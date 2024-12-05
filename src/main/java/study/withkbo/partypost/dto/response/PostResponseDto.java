@@ -67,8 +67,8 @@ public class PostResponseDto {
                 .myTeamImg(partyPost.getGame().getTeam().getTeamName()) // 우리 팀 이미지 가져오기 위한 팀이름
                 .opposingTeam(partyPost.getGame().getAwayTeam()) // 상대팀 이미지 가져오기 위한 상대팀 이름
                 // 지도를 위한 위도 경도 가져오기
-                .latitude(partyPost.getGame().getTeam().getLatitude().toString()) // 우리팀? 경기장 위치 위도 문자열로
-                .longitude(partyPost.getGame().getTeam().getLongitude().toString()) // 우리팀? 경기장 위치 경도 문자열로
+                .latitude(String.format("%.6f", partyPost.getGame().getTeam().getLatitude())) // 6자리 소수점까지 포맷
+                .longitude(String.format("%.6f", partyPost.getGame().getTeam().getLongitude())) // 6자리 소수점까지 포맷
                 .matchDate(partyPost.getGame().getMatchDate()) // 경기 일정
                 .matchTime(partyPost.getGame().getMatchTime()) // 경기 시간
                 .maxPeopleNum(partyPost.getMaxPeopleNum()) // 최대 참여 인원
