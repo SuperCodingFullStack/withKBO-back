@@ -50,4 +50,3 @@ public class UserSignUpRequestDto {
 
     private String team;
 }
-
