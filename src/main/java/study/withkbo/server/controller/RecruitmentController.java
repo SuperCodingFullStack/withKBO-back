@@ -11,6 +11,7 @@ import study.withkbo.chat.entity.ChatMessage;
 import study.withkbo.chat.service.ChatRoomService;
 import study.withkbo.common.response.ApiResponseDto;
 import study.withkbo.common.response.MessageType;
+import study.withkbo.security.UserDetailsImpl;
 import study.withkbo.server.dto.request.RecruitRequestDto;
 import study.withkbo.server.dto.response.RecruitResponseDto;
 import study.withkbo.user.entity.User;
@@ -22,12 +23,13 @@ public class RecruitmentController {
 
     @MessageMapping("/chat/{roomName}") // 메시지 수신
     @SendTo("/topic/{roomName}")  // 수신된 메시지 브로드 캐스트로 송신
-    public ApiResponseDto<RecruitResponseDto> recruitUser(@AuthenticationPrincipal User user, @RequestBody RecruitRequestDto request) {
+    public ApiResponseDto<RecruitResponseDto> recruitUser(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody RecruitRequestDto request) {
         ChatMessage chatMessage = request.getChatMessage();
-        chatMessage.setUser(user);
+        chatMessage.setUser(userDetails.getUser());
+
         chatRoomService.sendMessageToRoom(chatMessage);
 
-        RecruitResponseDto responseDto = new RecruitResponseDto(chatMessage, user);
+        RecruitResponseDto responseDto = new RecruitResponseDto(chatMessage, userDetails.getUser());
         return ApiResponseDto.success(MessageType.CREATE, responseDto);
     }
 }

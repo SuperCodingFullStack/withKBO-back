@@ -7,6 +7,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.withkbo.chat.dto.request.ChatRoomRequestDto;
+import study.withkbo.chat.dto.response.ChatRoomResponseDto;
 import study.withkbo.chat.entity.ChatInvitation;
 import study.withkbo.chat.entity.ChatMessage;
 import study.withkbo.chat.entity.ChatParticipants;
@@ -22,6 +23,7 @@ import study.withkbo.user.repository.UserRepository;
 import study.withkbo.user.service.UserService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,6 +54,7 @@ public class ChatRoomService {
         ChatInvitation chatInvitation = new ChatInvitation();
         chatInvitation.setRoom(saveRoom);
         chatInvitation.setInviter(inviter);
+        chatInvitation.setInvitee(null);
         chatInvitation.setStatus("생성됨");
         chatInvitationRepository.save(chatInvitation);
 
@@ -135,4 +138,13 @@ public class ChatRoomService {
         template.convertAndSend("/topic/" + roomName, chatMessage); // 해당 채팅방에 메시지 브로드캐스트
     }
 
+    public ChatRoomResponseDto getRoomNameById(Long roomId) {
+        Optional<ChatRoom> chatRoom = chatRoomRepository.findById(roomId);
+        if (chatRoom.isPresent()) {
+            ChatRoom chatroom = chatRoom.get();
+            return new ChatRoomResponseDto(chatroom.getRoomName());
+        } else {
+            throw new CommonException(CommonError.NOT_FOUND);
+        }
+    }
 }
