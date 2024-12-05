@@ -46,6 +46,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                     try {
                         value.sendMessage(message);
                     } catch (IOException e) {
+                        log.error("Error closing WebSocket session", e);
                         throw new CommonException(CommonError.WEB_SOCKET_MESSAGE_SEND_ERROR);
                     }
                 }

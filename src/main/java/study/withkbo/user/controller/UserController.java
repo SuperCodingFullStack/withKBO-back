@@ -101,5 +101,9 @@ public class UserController {
         userService.checkNickname(nickname);
         return ApiResponseDto.success(MessageType.RETRIEVE, "닉네임 중복 확인이 완료되었습니다");
     }
-
+    @GetMapping("")
+    public ApiResponseDto<UserResponseDto>getUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user =userDetails.getUser();
+        return ApiResponseDto.success(MessageType.RETRIEVE, new UserResponseDto(user));
+    }
 }

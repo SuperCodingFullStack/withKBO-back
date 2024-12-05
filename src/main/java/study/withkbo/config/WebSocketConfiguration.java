@@ -31,6 +31,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/portfolio") // 클라이언트 요청 엔드포인트
+				.setAllowedOrigins("http://localhost:5173")
 				.withSockJS();
 	}
 

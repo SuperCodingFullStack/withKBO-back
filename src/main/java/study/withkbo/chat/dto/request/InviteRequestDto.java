@@ -12,6 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InviteRequestDto {
-    private Long inviterUserId; // 초대자
     private List<Long> inviteeUserId; // 초대받는 사람
 }

@@ -13,7 +13,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import study.withkbo.exception.common.CommonError;
@@ -95,7 +94,11 @@ public class GameService {
 
     private Map<String, Team> stringTeamToMap(List<Team> teams) {
         return teams.stream()
-                .collect(Collectors.toMap(Team::getTeamName, team -> team));
+                .collect(Collectors.toMap(
+                        Team::getTeamName,
+                        team -> team,
+                        (existing, replacement) -> existing // 중복 키가 발생할 경우 기존 값을 유지
+                ));
     }
 
     @Transactional
