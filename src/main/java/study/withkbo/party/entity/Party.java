@@ -1,6 +1,8 @@
 package study.withkbo.party.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import study.withkbo.partypost.entity.PartyPost;
@@ -8,8 +10,10 @@ import study.withkbo.user.entity.User;
 
 @Entity
 @Getter
+@Builder
 @Table(name = "t_party")
 @NoArgsConstructor
+@AllArgsConstructor
 public class Party {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

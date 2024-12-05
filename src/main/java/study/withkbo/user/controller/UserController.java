@@ -9,7 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.s3.S3Client;
 import study.withkbo.common.response.ApiResponseDto;
 import study.withkbo.common.response.MessageType;
 import study.withkbo.jwt.JwtUtil;
@@ -98,15 +97,16 @@ public class UserController {
         return ApiResponseDto.success(MessageType.UPDATE,result);
     }
 
+    @PostMapping("/upload")
+    public ApiResponseDto<String> uploadImage(@RequestPart MultipartFile image) {
+        String url = userService.uploadImage(image);
+        return ApiResponseDto.success(MessageType.RETRIEVE,url);
+    }
+
     @GetMapping("/nickname")
     public ApiResponseDto<String> checkNickname(@RequestParam String nickname) {
         userService.checkNickname(nickname);
         return ApiResponseDto.success(MessageType.RETRIEVE, "닉네임 중복 확인이 완료되었습니다");
-    }
-
-    @PostMapping("/upload")
-    public ApiResponseDto<String> uploadProfile(@RequestPart(value="image", required = false)MultipartFile image) {
-        return ApiResponseDto.success(MessageType.CREATE, userService.uploadImage(image));
     }
 
 }

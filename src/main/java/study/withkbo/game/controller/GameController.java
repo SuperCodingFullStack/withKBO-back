@@ -1,14 +1,13 @@
 package study.withkbo.game.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import study.withkbo.common.response.ApiResponseDto;
 import study.withkbo.common.response.MessageType;
 import study.withkbo.game.dto.response.GameInfoResponseDto;
 import study.withkbo.game.dto.response.GameResponseDto;
 import study.withkbo.game.service.GameService;
-import study.withkbo.security.UserDetailsImpl;
+
 
 import java.util.List;
 

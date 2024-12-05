@@ -11,6 +11,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectAclRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import study.withkbo.exception.common.CommonError;
 import study.withkbo.exception.common.CommonException;
+import study.withkbo.team.repository.TeamRepository;
 import study.withkbo.user.dto.request.UserPasswordRequestDto;
 import study.withkbo.user.dto.request.UserSignUpRequestDto;
 import study.withkbo.user.dto.request.UserUpdateRequestDto;
@@ -27,6 +28,7 @@ import java.util.*;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TeamRepository teamRepository;
     private final S3Client s3Client;
     private final String s3BucketName;
 

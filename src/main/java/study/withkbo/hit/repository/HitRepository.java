@@ -11,4 +11,5 @@ public interface HitRepository extends JpaRepository<Hit, Long> {
     // 해당 유저가 해당 게시글에 조회한 이력이 있는가?
     boolean existsByUserAndPartyPost(User user, PartyPost partyPost);
 
+    void deleteByPartyPostId(long id);
 }

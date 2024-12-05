@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import study.withkbo.user.entity.User;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -26,9 +28,11 @@ public class ChatInvitation {
     @JoinColumn(name = "inviter_user_id", nullable = false)
     private User inviter;
 
-    @ManyToOne
-    @JoinColumn(name = "invitee_user_id", nullable = false)
-    private User invitee;
+    @ManyToMany
+    @JoinTable(name = "t_chat_invitation_invitee"
+            , joinColumns = @JoinColumn(name = "chat_invitation_id")
+            , inverseJoinColumns = @JoinColumn(name = "invitee_user_id"))
+    private List<User> invitee;
 
     private String status;
 }

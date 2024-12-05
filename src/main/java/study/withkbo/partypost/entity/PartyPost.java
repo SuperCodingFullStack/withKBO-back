@@ -8,6 +8,7 @@ import study.withkbo.game.entity.Game;
 import study.withkbo.partypost.dto.request.PartyPostUpdateRequestDto;
 import study.withkbo.user.entity.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,7 +27,6 @@ public class PartyPost  extends BaseTime {
     // 게시글에는 반드시 어떤 작성자가 작성했는지 표기가 되어야한다.
     @JoinColumn(name = "user_id", nullable = false)
     private User user;  // 유저 정보? 가져온다.
-
     @ManyToOne(fetch = FetchType.LAZY)
     // 하나의 경기정보는 여러 게시글에서 사용될 수 있다.
     // 게시글에는 반드시 어떤 경기정보가 있어야만 한다.
@@ -55,9 +55,9 @@ public class PartyPost  extends BaseTime {
     @Column(nullable = false, name = "post_state", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean postState;  // 글 활성화 여부
 
-    @OneToMany(mappedBy = "partyPost", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "partyPost", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Comment> comments = List.of();;  // 해당 게시글에 달린 댓글들
+    private List<Comment> comments = new ArrayList<>(); // 해당 게시글에 달린 가변적인 댓글들
 
     // 필요에 따라 추가: 기존 필드 기반 빌더 생성 메서드
     public PartyPost toBuilderWithUpdates(Game game, PartyPostUpdateRequestDto updateDto) {
@@ -74,7 +74,6 @@ public class PartyPost  extends BaseTime {
         if (this.likeCount == null) this.likeCount = 0;
         if (this.hitCount == null) this.hitCount = 0;
     }
-
     //혜정 코드
     public PartyPost(Long partyPostId) { this.id = partyPostId; }
 

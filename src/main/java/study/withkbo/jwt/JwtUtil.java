@@ -31,7 +31,6 @@ public class JwtUtil {
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
 
-
     @PostConstruct
     public void init() {
         byte[] bytes = Base64.getDecoder().decode(secretKey);
@@ -45,7 +44,7 @@ public class JwtUtil {
         return BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(username)
-                        .claim(AUTHORIZATION_KEY, role)
+                        .claim(AUTHORIZATION_KEY, role.getAuthority())
                         .setExpiration(new Date(date.getTime() + expiration)) // 만료 시간
                         .setIssuedAt(date)
                         .signWith(key, signatureAlgorithm)
@@ -82,7 +81,7 @@ public class JwtUtil {
     public Claims getUserInfoFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
-
-
-
 }
+
+
+

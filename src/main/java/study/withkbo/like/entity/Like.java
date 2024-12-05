@@ -20,7 +20,11 @@ public class Like {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "party_post_id", nullable = false)
+    @JoinColumn(
+            name = "party_post_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "FK_party_post_like", value = ConstraintMode.CONSTRAINT)
+    )
     private PartyPost partyPost;
 
     public Like(User user, PartyPost partyPost) {
