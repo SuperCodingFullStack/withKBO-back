@@ -28,7 +28,6 @@ public class PartyPost  extends BaseTime {
     // 게시글에는 반드시 어떤 작성자가 작성했는지 표기가 되어야한다.
     @JoinColumn(name = "user_id", nullable = false)
     private User user;  // 유저 정보? 가져온다.
-
     @ManyToOne(fetch = FetchType.LAZY)
     // 하나의 경기정보는 여러 게시글에서 사용될 수 있다.
     // 게시글에는 반드시 어떤 경기정보가 있어야만 한다.
@@ -80,7 +79,6 @@ public class PartyPost  extends BaseTime {
         if (this.likeCount == null) this.likeCount = 0;
         if (this.hitCount == null) this.hitCount = 0;
     }
-
     //혜정 코드
     public PartyPost(Long partyPostId) { this.id = partyPostId; }
 

@@ -5,6 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import study.withkbo.chat.dto.request.ChatRoomRequestDto;
+import study.withkbo.chat.dto.response.ChatRoomResponseDto;
 import study.withkbo.chat.entity.ChatRoom;
 import study.withkbo.chat.service.ChatRoomService;
 import study.withkbo.common.response.ApiResponseDto;
@@ -34,6 +35,13 @@ public class ChatRoomController {
         User inviter = userDetails.getUser();
         ChatRoom chatRoom = chatRoomService.createChatRoom(chatRoomRequestDTO.getRoomName(), inviter);
         return ApiResponseDto.success(MessageType.CREATE, chatRoom);
+    }
+
+    // 채팅방 이름 가져오기
+    @GetMapping("/{roomId}")
+    public ApiResponseDto<ChatRoomResponseDto> getChatName(@PathVariable Long roomId) {
+        ChatRoomResponseDto roomResponseDto = chatRoomService.getRoomNameById(roomId);
+        return ApiResponseDto.success(MessageType.RETRIEVE, roomResponseDto);
     }
 
     // 채팅방 조회

@@ -88,7 +88,7 @@ public class SecurityConfig {
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/", "/api/user/login", "api/user/signUp", "/swagger-ui/**","/swagger-resources/**",
-                                "/v3/api-docs/**", "/portfolio").permitAll() //메인, 로그인 , 회원가입 페이지 접근 허용
+                                "/v3/api-docs/**", "/portfolio", "api/user/upload").permitAll() //메인, 로그인 , 회원가입 페이지 접근 허용
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/post/s").permitAll() // 인증 없이 접근 허용
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // **프리플라이트 요청 허용**

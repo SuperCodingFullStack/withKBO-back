@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +32,6 @@ public class NotificationService {
     private static final Long DEFAULT_TIMEOUT = 60 * 1000L * 60;
     private final EmitterRepository emitterRepository;
     private final NotifyRepository notifyRepository;
-    //private final NotificationService notificationService;
 
     public SseEmitter subscribe(String username, String lastEventId, UserDetailsImpl user) {
         String emitterId = makeTimeIncludeId(username);
@@ -41,9 +42,14 @@ public class NotificationService {
         String eventId = makeTimeIncludeId(username);
         sendNotification(emitter,eventId,emitterId, "EventStream Created. [userName=" + username + "]");
 
-//        알림을 보낸 유저 객체 ,알림을 받을 상대방 유저 객체, 알림타입, 읽음여부, "내용", "요청 url"
-//        this.send(user.getUser(), Notification.NotificationType.PARTY,
-//                Notification.ReadStatus.UNREAD,"참가요청이 왔습니다.","/api/connect");
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+            try {
+                emitter.send(SseEmitter.event().name("ping").data(""));
+            } catch (IOException e) {
+                log.error("Error sending ping message", e);
+                emitterRepository.deleteById(emitterId);
+            }
+        }, 0, 30, TimeUnit.SECONDS);
 
         if(hasLostData(lastEventId)){
             sendLostData(lastEventId, username, emitterId, emitter);
